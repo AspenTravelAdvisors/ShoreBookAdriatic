@@ -1,6 +1,6 @@
 /* Shore Book — offline cache.
    Bump CACHE when you edit index.html, or the phone keeps the old copy. */
-const CACHE = "shore-book-v1";
+const CACHE = "shore-book-v2";
 const ASSETS = [
   "./",
   "./index.html",

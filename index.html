@@ -18,6 +18,7 @@
   --sea:#1D5A6E;
   --sea-tint:#DDE7E9;
   --rosso:#8C2F39;
+  --reel:#8A6B1F;
   --rule:#C9C6BB;
   --mute:#6E7378;
   --display:"Didot","Bodoni 72",Didot LT STD,"Hoefler Text",Georgia,serif;
@@ -89,9 +90,9 @@ h1{
 /* ---------- tabs ---------- */
 .tabs{display:flex;border-bottom:1px solid var(--rule);margin:0 0 18px}
 .tab{
-  flex:1;background:none;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;
-  padding:9px 2px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--mute);cursor:pointer;
+  flex:1 1 0;min-width:0;background:none;border:0;border-bottom:2px solid transparent;
+  margin-bottom:-1px;padding:9px 1px;font-family:var(--mono);font-size:10px;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--mute);cursor:pointer;
 }
 .tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--rosso)}
 .tab:focus-visible{outline:2px solid var(--sea);outline-offset:-2px}
@@ -124,6 +125,8 @@ h1{
   color:var(--mute);margin-top:10px}
 .geo{display:inline-block;margin-top:9px;font-family:var(--mono);font-size:11px;
   color:var(--sea);text-decoration:none;border-bottom:1px solid var(--sea-tint)}
+.geo+.geo{margin-left:14px}
+.geo.btn{border:0;border-bottom:1px solid var(--sea-tint);background:none;padding:0;cursor:pointer}
 
 /* ---------- projection ---------- */
 .proj{border:1px dashed var(--rule);background:var(--sand);padding:11px 13px;margin:0 0 20px;
@@ -143,6 +146,89 @@ h1{
 .entry p{margin:5px 0 0;font-size:14px;color:var(--ink)}
 .know li{font-size:14.5px;margin-bottom:9px}
 .know{padding-left:18px}
+
+/* ---------- glyphs (shared by chart and cards) ---------- */
+.gly{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:21px;height:21px;flex:0 0 21px;margin-top:1px;
+  font-family:var(--mono);font-size:10px;color:var(--sand);background:var(--ink);
+}
+.gly i{font-style:normal;display:block}
+.gly.k-walk{border-radius:50%}
+.gly.k-eat{background:var(--rosso)}
+.gly.k-buy{background:var(--sea);transform:rotate(45deg)}
+.gly.k-buy i{transform:rotate(-45deg)}
+.gly.k-screen{background:var(--reel);border-radius:50%;
+  box-shadow:inset 0 0 0 1px var(--reel), inset 0 0 0 2.4px var(--sand)}
+
+/* ---------- cards ---------- */
+.card{border:1px solid var(--rule);background:var(--sand);padding:11px 12px;margin:0 0 10px}
+.card.hi{border-color:var(--ink);box-shadow:2px 2px 0 var(--rule)}
+.card-head{display:flex;gap:10px;align-items:flex-start}
+.card-title{flex:1;min-width:0}
+.card-name{font-family:var(--display);font-size:19px;line-height:1.15;display:block}
+.card-meta{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--mute);display:block;margin-top:3px}
+.card-title .entry-tag{display:inline-block;margin-top:6px;white-space:normal}
+.card p{margin:7px 0 0;font-size:14px}
+.card .note{color:var(--mute);font-size:13px}
+.card-foot{display:flex;gap:14px;flex-wrap:wrap;align-items:baseline;margin-top:10px;
+  font-family:var(--mono);font-size:10.5px}
+.card-foot a,.card-foot button{color:var(--sea);text-decoration:none;border:0;background:none;
+  font:inherit;padding:0;cursor:pointer;border-bottom:1px solid var(--sea-tint)}
+.coord{color:var(--mute);font-family:var(--mono);font-size:10.5px}
+.sec-note{font-size:12.5px;color:var(--mute);margin:0 0 14px}
+
+/* ---------- chart ---------- */
+.tools{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.lay{
+  border:1px solid var(--rule);background:transparent;cursor:pointer;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--mute);padding:5px 7px;display:inline-flex;align-items:center;gap:6px;
+}
+.lay[aria-pressed="true"]{color:var(--ink);border-color:var(--ink)}
+.lay:focus-visible{outline:2px solid var(--sea);outline-offset:2px}
+.sw{width:9px;height:9px;display:inline-block;background:var(--ink)}
+.sw.k-walk{border-radius:50%}
+.sw.k-eat{background:var(--rosso)}
+.sw.k-buy{background:var(--sea);transform:rotate(45deg)}
+.sw.k-screen{background:var(--reel);border-radius:50%}
+.chart-frame{border:1px solid var(--ink);background:var(--sand);padding:8px;margin:0 0 12px}
+.chart-frame svg{display:block;width:100%;height:auto;max-height:70vh;margin:0 auto}
+.chart-empty{font-family:var(--mono);font-size:11px;color:var(--mute);text-align:center;padding:40px 0}
+.off{border-top:1px solid var(--rule);margin-top:16px;padding-top:12px}
+.off h3,.index h3{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--mute);font-weight:400;margin:0 0 8px}
+.offrow{display:flex;gap:10px;align-items:baseline;padding:6px 0;border-top:1px solid var(--rule);
+  font-size:13.5px}
+.offrow:first-of-type{border-top:0}
+.offrow .bearing{font-family:var(--mono);font-size:10.5px;color:var(--sea);white-space:nowrap}
+.offrow .oname{flex:1;min-width:0}
+.offrow .osub{display:block;font-size:12px;color:var(--mute)}
+.index{margin-top:16px}
+.ixrow{display:flex;gap:9px;align-items:center;width:100%;text-align:left;background:none;
+  border:0;border-top:1px solid var(--rule);padding:7px 0;cursor:pointer;font:inherit;color:inherit}
+.ixrow:first-of-type{border-top:0}
+.ixrow .ixname{flex:1;min-width:0;font-size:14px;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis}
+.ixrow .ixsub{font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--mute);white-space:nowrap}
+.ixrow[aria-current="true"] .ixname{font-weight:600}
+
+/* ---------- chart internals (inline SVG) ---------- */
+.gr line{stroke:#C9C6BB;stroke-width:.4;stroke-dasharray:2 3}
+.tk{font-family:Menlo,monospace;font-size:6.5px;fill:#6E7378;letter-spacing:.04em}
+.frm{fill:none;stroke:#C9C6BB;stroke-width:.8}
+.route{fill:none;stroke:#131E28;stroke-width:1;stroke-dasharray:4 3;opacity:.5}
+.lead{stroke:#6E7378;stroke-width:.5}
+.true{fill:#6E7378}
+.pin{cursor:pointer}
+.pin text{font-family:Menlo,monospace;font-size:9px;fill:#FBFAF6}
+.pin:focus-visible{outline:none}
+.pin:focus-visible .halo,.halo{fill:none;stroke:#131E28;stroke-width:1.2}
+.bar line{stroke:#131E28;stroke-width:1}
+.rose line{stroke:#131E28;stroke-width:.8}
+.rose polygon{fill:#131E28}
 
 /* ---------- footer ---------- */
 footer{border-top:1px solid var(--rule);margin-top:26px;padding:14px 0 0;
@@ -181,6 +267,8 @@ footer{border-top:1px solid var(--rule);margin-top:26px;padding:14px 0 0;
   <button class="tab" role="tab" data-tab="walk" aria-selected="true">Walk</button>
   <button class="tab" role="tab" data-tab="eat" aria-selected="false">Eat</button>
   <button class="tab" role="tab" data-tab="buy" aria-selected="false">Buy</button>
+  <button class="tab" role="tab" data-tab="screen" aria-selected="false">Screen</button>
+  <button class="tab" role="tab" data-tab="chart" aria-selected="false">Chart</button>
   <button class="tab" role="tab" data-tab="know" aria-selected="false">Know</button>
 </div>
 
@@ -196,6 +284,9 @@ footer{border-top:1px solid var(--rule);margin-top:26px;padding:14px 0 0;
 <script>
 /* ============================================================
    DATA — six ports. Hours and prices drift; treat as a guide.
+   Every entry carries a coordinate, "lat,lon" in decimal degrees.
+   Stops and landmarks are surveyed to the door; shops, kitchens
+   and film marks are good to a block, which is all you need on foot.
    ============================================================ */
 const PORTS = [
 {
@@ -241,17 +332,43 @@ const PORTS = [
      c:"45.4297,12.3245"}
   ],
   eat:[
-    {n:"All'Arco", t:"Cicchetti", d:"Behind the Rialto market. Standing room, whatever the market had that morning. Closes mid-afternoon and does not do dinner."},
-    {n:"Osteria alla Vedova", t:"Cicchetti", d:"Cannaregio. The meatballs are the reason people come. Cash only, no reservations for the bar."},
-    {n:"Cantina Do Mori", t:"Bacaro", d:"Operating since 1462. Dark, narrow, hung with copper. Order francobolli and an ombra."},
-    {n:"Trattoria alla Madonna", t:"Sit-down", d:"Old-guard Venetian fish near Rialto. Unfashionable in the best sense."},
-    {n:"Pasticceria Tonolo", t:"Breakfast", d:"Dorsoduro. Stand at the bar, take a krapfen, do not ask for a cappuccino after eleven."}
+    {n:"All'Arco", t:"Cicchetti", d:"Behind the Rialto market. Standing room, whatever the market had that morning. Closes mid-afternoon and does not do dinner.", c:"45.4382,12.3331"},
+    {n:"Osteria alla Vedova", t:"Cicchetti", d:"Cannaregio. The meatballs are the reason people come. Cash only, no reservations for the bar.", c:"45.4405,12.3336"},
+    {n:"Cantina Do Mori", t:"Bacaro", d:"Operating since 1462. Dark, narrow, hung with copper. Order francobolli and an ombra.", c:"45.4381,12.3335"},
+    {n:"Trattoria alla Madonna", t:"Sit-down", d:"Old-guard Venetian fish near Rialto. Unfashionable in the best sense.", c:"45.4378,12.3345"},
+    {n:"Pasticceria Tonolo", t:"Breakfast", d:"Dorsoduro. Stand at the bar, take a krapfen, do not ask for a cappuccino after eleven.", c:"45.4362,12.3235"}
   ],
   buy:[
-    {n:"Marbled paper", d:"Legatoria Polliero by the Frari, and Il Pavone in Dorsoduro. Hand-combed, not printed — check the edge of the sheet."},
-    {n:"Murano glass", d:"Buy on Murano itself or from a shop showing the Vetro Artistico Murano trademark. Everything on the Riva degli Schiavoni is imported."},
-    {n:"Forcole and oars", d:"Saverio Pastor, near the Salute. Sculptural walnut oarlocks — a genuine Venetian craft with about three practitioners left."},
-    {n:"Burano lace", d:"Real punto in aria costs hundreds and takes months. Anything cheap is machine-made from abroad; the museum shop is honest about which is which."}
+    {n:"Marbled paper", d:"Legatoria Polliero by the Frari, and Il Pavone in Dorsoduro. Hand-combed, not printed — check the edge of the sheet.", c:"45.4369,12.3264"},
+    {n:"Murano glass", d:"Buy on Murano itself or from a shop showing the Vetro Artistico Murano trademark. Everything on the Riva degli Schiavoni is imported.", c:"45.4575,12.3530"},
+    {n:"Forcole and oars", d:"Saverio Pastor, near the Salute. Sculptural walnut oarlocks — a genuine Venetian craft with about three practitioners left.", c:"45.4300,12.3330"},
+    {n:"Burano lace", d:"Real punto in aria costs hundreds and takes months. Anything cheap is machine-made from abroad; the museum shop is honest about which is which.", c:"45.4853,12.4170"}
+  ],
+  screen:[
+    {n:"Campo San Barnaba", f:"Indiana Jones and the Last Crusade", y:"1989", r:"The library",
+     d:"The church of San Barnaba is the library Indy walks into looking for the X on the floor. It is deconsecrated and has spent years as an exhibition hall, so the interior you see on screen is not what is behind the door.",
+     x:"Two minutes from Tonolo. The same campo is where Katharine Hepburn steps backwards into the canal in Summertime (1955) — the fondamenta by the Ponte dei Pugni.",
+     c:"45.4334,12.3261"},
+    {n:"Piazza San Marco", f:"Moonraker · Spider-Man: Far From Home", y:"1979 · 2019", r:"The set piece",
+     d:"Roger Moore drives a gondola-hovercraft across the paving in Moonraker, to the visible disgust of a pigeon. Forty years later the square and the Rialto are drowned by a water elemental in Far From Home.",
+     x:"",
+     c:"45.4341,12.3388"},
+    {n:"Grand Canal & Rialto Bridge", f:"Casino Royale", y:"2006", r:"Bond's arrival",
+     d:"Bond and Vesper sail in past the Doge's Palace and up the Grand Canal — the last quiet ten minutes of the film before the house comes down.",
+     x:"The sinking palazzo was a Pinewood tank set. The water is real, the building is not.",
+     c:"45.4380,12.3358"},
+    {n:"Campo San Polo", f:"Casino Royale", y:"2006", r:"The foot chase",
+     d:"The pursuit that ends in the collapsing house runs through the largest campo in Venice after San Marco. It is usually close to empty, which is exactly why it filmed well.",
+     x:"",
+     c:"45.4374,12.3282"},
+    {n:"San Nicolò dei Mendicoli", f:"Don't Look Now", y:"1973", r:"The church John Baxter restores",
+     d:"Nicolas Roeg shot the wrong Venice on purpose — winter, empty, far west in Dorsoduro where no tour goes. The church is real, still parish, and still open.",
+     x:"Twelve minutes west along the Zattere. The Baxters' hotel is the Gabrielli on Riva degli Schiavoni.",
+     c:"45.4326,12.3178"},
+    {n:"Palazzo Pisani Moretta", f:"The Tourist", y:"2010", r:"The 'Hotel Danieli' water entrance",
+     d:"Depp and Jolie check into the Danieli, except the arrival filmed is this palazzo on the Grand Canal. The actual Danieli is round at San Zaccaria, nowhere near the shot.",
+     x:"Best seen from the water — Line 1 passes the door.",
+     c:"45.4364,12.3300"}
   ],
   know:[
     "Vaporetto tickets must be validated at the pylon before boarding; the fine for an unvalidated ticket is steep and enforced.",
@@ -304,16 +421,58 @@ const PORTS = [
      c:"42.6395,18.1103"}
   ],
   eat:[
-    {n:"Nishta", t:"Vegetarian", d:"Tiny, inventive, tucked in a side lane off Prijeko. Books out — go early or reserve."},
-    {n:"Barba", t:"Fast", d:"Octopus burger and shrimp on a stick, counter service. The right answer when the walls have destroyed you."},
-    {n:"Lucin Kantun", t:"Konoba", d:"Six tables, handwritten menu, quietly one of the best kitchens inside the walls."},
-    {n:"Dubravka 1836", t:"Terrace", d:"By Pile Gate with a view up the walls to Lovrijenac. Ordinary food, extraordinary position."},
-    {n:"Kopun", t:"Sit-down", d:"On Boškovića square. Capon in honey and orange is the historic house dish."}
+    {n:"Nishta", t:"Vegetarian", d:"Tiny, inventive, tucked in a side lane off Prijeko. Books out — go early or reserve.", c:"42.6418,18.1093"},
+    {n:"Barba", t:"Fast", d:"Octopus burger and shrimp on a stick, counter service. The right answer when the walls have destroyed you.", c:"42.6415,18.1101"},
+    {n:"Lucin Kantun", t:"Konoba", d:"Six tables, handwritten menu, quietly one of the best kitchens inside the walls.", c:"42.6417,18.1084"},
+    {n:"Dubravka 1836", t:"Terrace", d:"By Pile Gate with a view up the walls to Lovrijenac. Ordinary food, extraordinary position.", c:"42.6417,18.1066"},
+    {n:"Kopun", t:"Sit-down", d:"On Boškovića square. Capon in honey and orange is the historic house dish.", c:"42.6411,18.1109"}
   ],
   buy:[
-    {n:"Konavle embroidery", d:"Geometric red-and-black silk work from the valley south of town. Look for the hand-knotted reverse, not a printed panel."},
-    {n:"Red coral", d:"Zlatarna and the old goldsmiths sell Adriatic coral set in silver. Ask about origin — Mediterranean coral is regulated and papered."},
-    {n:"Arboretum soap and oils", d:"Lavender and immortelle from the Dalmatian islands, sold everywhere; the monastery and pharmacy versions are the honest ones."}
+    {n:"Konavle embroidery", d:"Geometric red-and-black silk work from the valley south of town. Look for the hand-knotted reverse, not a printed panel.", c:"42.6408,18.1099"},
+    {n:"Red coral", d:"Zlatarna and the old goldsmiths sell Adriatic coral set in silver. Ask about origin — Mediterranean coral is regulated and papered.", c:"42.6409,18.1091"},
+    {n:"Arboretum soap and oils", d:"Lavender and immortelle from the Dalmatian islands, sold everywhere; the monastery and pharmacy versions are the honest ones.", c:"42.6417,18.1082"}
+  ],
+  screen:[
+    {n:"Fort Lovrijenac", f:"Game of Thrones", y:"2011–", r:"The Red Keep, from outside",
+     d:"The free-standing fortress on the rock west of Pile is the Red Keep exterior, and the ground for Joffrey's name-day tourney. Its own history beats the fiction: raised in three months in 1038 to reach the rock before a Venetian fleet could.",
+     x:"Entry is included in the City Walls ticket — do not pay twice. Steep steps, no shade.",
+     c:"42.6410,18.1042"},
+    {n:"Jesuit Stairs", f:"Game of Thrones", y:"2015", r:"Cersei's walk of shame",
+     d:"The walk begins at the top of the baroque flight by St Ignatius and ends down in Gundulić Square, shot over several nights with the stone dressed to look like earth.",
+     x:"This is stop 6 of the walk — you will be standing on it anyway.",
+     c:"42.6397,18.1097"},
+    {n:"Minčeta Tower", f:"Game of Thrones", y:"2012", r:"The House of the Undying, Qarth",
+     d:"The round tower at the highest corner of the walls is the exterior Daenerys circles, looking for a way in to her stolen dragons.",
+     x:"On the wall circuit, so it costs you nothing extra. Also used as a Canto Bight backdrop in The Last Jedi.",
+     c:"42.6423,18.1091"},
+    {n:"Ethnographic Museum Rupe", f:"Game of Thrones", y:"2011–", r:"Littlefinger's brothel",
+     d:"A 16th-century state granary with fifteen dry wells cut into the bedrock beneath it. The production used the frontage; the museum inside is one of the best things in the city and almost nobody goes in.",
+     x:"",
+     c:"42.6404,18.1073"},
+    {n:"Gradac Park", f:"Game of Thrones", y:"2014", r:"The Purple Wedding",
+     d:"Joffrey's wedding feast, and his end, staged on the terrace above the sea in season four episode two.",
+     x:"Ten minutes west of Pile, free, shaded and empty at midday. The best picnic ground in Dubrovnik.",
+     c:"42.6403,18.0992"},
+    {n:"Pile Gate & Kolorina bay", f:"Game of Thrones", y:"2011–", r:"King's Landing gates · Blackwater Bay",
+     d:"The small bay west of the drawbridge stands in for Blackwater Bay in the riot and landing scenes, and the gate itself is the one the smallfolk pour through.",
+     x:"",
+     c:"42.6420,18.1057"},
+    {n:"St Dominic Street", f:"Game of Thrones · Robin Hood", y:"2011– · 2018", r:"King's Landing market · Nottingham",
+     d:"The broad stepped street inside the Ploče end doubles as the King's Landing market. In 2018 the whole quarter became Nottingham, with the Church of St Dominic as the palace exterior.",
+     x:"",
+     c:"42.6425,18.1113"},
+    {n:"Stradun", f:"Star Wars: The Last Jedi", y:"2017", r:"Canto Bight",
+     d:"The casino-city chase was shot along the main street in March 2016, the 16th-century fronts dressed over as Cantonica. Filming also took the walls by Minčeta, the square by Revelin, Banje beach and the lane down to the Aquarium.",
+     x:"",
+     c:"42.6412,18.1097"},
+    {n:"Lokrum island", f:"Game of Thrones", y:"2012", r:"Qarth",
+     d:"The Benedictine cloister on the island is the Qarth garden party where Daenerys is refused her ships. The visitor centre keeps a replica Iron Throne, given by HBO.",
+     x:"Boats from the Old Port, 15 minutes each way. The last return is earlier than you think — read the board before you sail.",
+     c:"42.6266,18.1214"},
+    {n:"Trsteno Arboretum", f:"Game of Thrones", y:"2012–", r:"The royal gardens of King's Landing",
+     d:"Planted from 1492 and the oldest arboretum on this coast, standing in for the Red Keep gardens where Sansa and the Tyrells do their plotting under the plane trees.",
+     x:"About 18 km up the coast — bus 12/15 or a taxi, roughly €10 in, and only sane on a long port day.",
+     c:"42.7508,17.9836"}
   ],
   know:[
     "Croatia uses the euro. Cards are near-universal; keep €20 in coins for the bus and the Buža.",
@@ -361,15 +520,33 @@ const PORTS = [
      c:"42.4245,18.7715"}
   ],
   eat:[
-    {n:"Galion", t:"Waterfront", d:"Outside the walls facing the marina, with the walls floodlit behind. Best fish in town and the priciest."},
-    {n:"Konoba Scala Santa", t:"Konoba", d:"Traditional Montenegrin in a stone room. Njeguši prosciutto and cheese board, lamb under the sač."},
-    {n:"Bokun", t:"Wine bar", d:"Small plates and Montenegrin wine — ask for Vranac and Krstač."},
-    {n:"Ladovina", t:"Sit-down", d:"Just outside the old town, less cruise-facing, better value."}
+    {n:"Galion", t:"Waterfront", d:"Outside the walls facing the marina, with the walls floodlit behind. Best fish in town and the priciest.", c:"42.4232,18.7692"},
+    {n:"Konoba Scala Santa", t:"Konoba", d:"Traditional Montenegrin in a stone room. Njeguši prosciutto and cheese board, lamb under the sač.", c:"42.4249,18.7719"},
+    {n:"Bokun", t:"Wine bar", d:"Small plates and Montenegrin wine — ask for Vranac and Krstač.", c:"42.4247,18.7712"},
+    {n:"Ladovina", t:"Sit-down", d:"Just outside the old town, less cruise-facing, better value.", c:"42.4269,18.7683"}
   ],
   buy:[
-    {n:"Njeguši prosciutto", d:"Air-dried in the mountain village above the bay. Vacuum packs travel; check your customs allowance before buying meat."},
-    {n:"Rakija", d:"Loza (grape) and kruna (pear). Buy from a shop with a producer name on the label, not a souvenir bottle."},
-    {n:"Filigree silver", d:"Balkan wirework, sold along the lanes. Weight in the hand is the tell."}
+    {n:"Njeguši prosciutto", d:"Air-dried in the mountain village above the bay. Vacuum packs travel; check your customs allowance before buying meat.", c:"42.4246,18.7710"},
+    {n:"Rakija", d:"Loza (grape) and kruna (pear). Buy from a shop with a producer name on the label, not a souvenir bottle.", c:"42.4248,18.7709"},
+    {n:"Filigree silver", d:"Balkan wirework, sold along the lanes. Weight in the hand is the tell.", c:"42.4244,18.7713"}
+  ],
+  screen:[
+    {n:"Kotor Old Town", f:"Coriolanus", y:"2011", r:"Antium, the enemy city",
+     d:"Ralph Fiennes shot his modern-dress Coriolanus across Serbia and Montenegro, and the walled town plays the Volscian city Coriolanus defects to. The 2017 Papillon remake also opens here.",
+     x:"",
+     c:"42.4247,18.7706"},
+    {n:"Perast & the bay", f:"The November Man", y:"2014", r:"Lausanne and Lake Geneva",
+     d:"Pierce Brosnan's Boka Bay doubles for Lake Geneva, with Perast standing in for Lausanne. The bay is playing Switzerland, which tells you something about the light on it.",
+     x:"Twenty minutes up the bay by road. Worth doing only if you skip the fortress.",
+     c:"42.4867,18.6989"},
+    {n:"Mamula island", f:"Papillon", y:"2017", r:"The penal colony",
+     d:"The circular fort on the islet at the mouth of the bay is the prison. An 1850s Austrian gun fort, then an Italian camp in the Second World War, and now — to considerable local anger — a hotel.",
+     x:"Visible off the port side on the way out. Bring the camera up on deck for the exit.",
+     c:"42.3939,18.5561"},
+    {n:"Casino Royale — the one that got away", f:"Casino Royale", y:"2006", r:"Set in Montenegro. Shot in Czechia.",
+     d:"The whole Montenegro act — Hotel Splendide, the train through the mountains, the casino itself — is Karlovy Vary. Montenegro had just voted for independence and could not host a production that size, so the Grandhotel Pupp became the Splendide and the spa became the casino. Nothing you can see from this deck is in the film.",
+     x:"Ignore anyone on the quay selling a Bond tour of Kotor.",
+     c:""}
   ],
   know:[
     "Montenegro uses the euro but is not in the EU — customs allowances apply on re-entry.",
@@ -417,15 +594,29 @@ const PORTS = [
      c:"43.1712,16.4451"}
   ],
   eat:[
-    {n:"Konoba Menego", t:"Konoba", d:"Up the steps behind the square. Stone, candles, cured meats and island cheese. No fuss and no pasta."},
-    {n:"Dalmatino", t:"Sit-down", d:"Small, loud, extremely popular. Reserve days ahead or do not bother."},
-    {n:"Giaxa", t:"Fine", d:"In a 15th-century palace. The formal option on the island."},
-    {n:"Fig Café", t:"Casual", d:"Breakfast and light lunch, run by expats, reliably good coffee."}
+    {n:"Konoba Menego", t:"Konoba", d:"Up the steps behind the square. Stone, candles, cured meats and island cheese. No fuss and no pasta.", c:"43.1727,16.4420"},
+    {n:"Dalmatino", t:"Sit-down", d:"Small, loud, extremely popular. Reserve days ahead or do not bother.", c:"43.1729,16.4415"},
+    {n:"Giaxa", t:"Fine", d:"In a 15th-century palace. The formal option on the island.", c:"43.1728,16.4417"},
+    {n:"Fig Café", t:"Casual", d:"Breakfast and light lunch, run by expats, reliably good coffee.", c:"43.1726,16.4413"}
   ],
   buy:[
-    {n:"Agave lace", d:"From the Benedictine convent only. Anything sold on the riva as Hvar lace is not this."},
-    {n:"Lavender", d:"The island's signature crop. Oil and dried bundles from the market stalls; check for a Hvar producer, since much sold here is imported."},
-    {n:"Island wine", d:"Plavac Mali from the southern slopes at Sveta Nedjelja. Zlatan Otok and Tomić are the names to look for."}
+    {n:"Agave lace", d:"From the Benedictine convent only. Anything sold on the riva as Hvar lace is not this.", c:"43.1729,16.4425"},
+    {n:"Lavender", d:"The island's signature crop. Oil and dried bundles from the market stalls; check for a Hvar producer, since much sold here is imported.", c:"43.1724,16.4425"},
+    {n:"Island wine", d:"Plavac Mali from the southern slopes at Sveta Nedjelja. Zlatan Otok and Tomić are the names to look for.", c:"43.1725,16.4418"}
+  ],
+  screen:[
+    {n:"Hvar town & the Pakleni channel", f:"The Odyssey", y:"2016", r:"Cousteau's Calypso",
+     d:"Jérôme Salle's Cousteau biopic worked out of Hvar town, Stari Grad and Jelsa, with the diving sequences shot in the channel off the Pakleni islands.",
+     x:"",
+     c:"43.1723,16.4419"},
+    {n:"The Pakleni islands", f:"The Deep — Orson Welles, unfinished", y:"1967–69", r:"A yacht, becalmed",
+     d:"Welles spent three summers shooting a thriller in this exact water, financing it himself between other people's films, and never finished it. Laurence Harvey died before the dubbing. Most of the footage survives in a Munich archive; almost none of it has been seen.",
+     x:"The islands are twenty minutes out by taxi boat from the riva — the same water, and the best swimming near the town.",
+     c:"43.1630,16.3960"},
+    {n:"Komiža, island of Vis", f:"Mamma Mia! Here We Go Again", y:"2018", r:"Kalokairi, the Greek island",
+     d:"The sequel's Greece is Croatia: Komiža harbour, the Barjoška cove on the western tip, and Stiniva for the beach.",
+     x:"Vis is the low island on the southern horizon, roughly 30 km off. It is not a port-day trip from here — note it for another year.",
+     c:"43.0450,16.0920"}
   ],
   know:[
     "Hvar town has a public-decency ordinance with real fines — no swimwear off the beach, no bare chests in the streets.",
@@ -473,15 +664,29 @@ const PORTS = [
      c:"44.1194,15.2223"}
   ],
   eat:[
-    {n:"Pet Bunara", t:"Sit-down", d:"By Five Wells Square. Modern Dalmatian, seasonal, the best cooking on the peninsula."},
-    {n:"Konoba Skoblar", t:"Konoba", d:"On the market square. Grilled fish by the kilo, priced honestly."},
-    {n:"Bruschetta", t:"Waterfront", d:"On the quay facing the channel. Reserve a terrace table for sunset."},
-    {n:"Kavana Danica", t:"Café", d:"Old-school coffee and cake on Kalelarga. Do as the locals do and take an hour over it."}
+    {n:"Pet Bunara", t:"Sit-down", d:"By Five Wells Square. Modern Dalmatian, seasonal, the best cooking on the peninsula.", c:"44.1145,15.2265"},
+    {n:"Konoba Skoblar", t:"Konoba", d:"On the market square. Grilled fish by the kilo, priced honestly.", c:"44.1146,15.2262"},
+    {n:"Bruschetta", t:"Waterfront", d:"On the quay facing the channel. Reserve a terrace table for sunset.", c:"44.1173,15.2233"},
+    {n:"Kavana Danica", t:"Café", d:"Old-school coffee and cake on Kalelarga. Do as the locals do and take an hour over it.", c:"44.1152,15.2251"}
   ],
   buy:[
-    {n:"Maraschino", d:"Luxardo and Maraska both trace to Zadar. The traditional straw-wrapped bottle is the one worth carrying."},
-    {n:"Nin salt", d:"Hand-harvested from the pans just north of the city, still by rake and wooden tools."},
-    {n:"Pag cheese", d:"From the island up the coast, sheep grazing on salt-blown herbs. Vacuum-sealed wheels travel well."}
+    {n:"Maraschino", d:"Luxardo and Maraska both trace to Zadar. The traditional straw-wrapped bottle is the one worth carrying.", c:"44.1152,15.2255"},
+    {n:"Nin salt", d:"Hand-harvested from the pans just north of the city, still by rake and wooden tools.", c:"44.2394,15.1836"},
+    {n:"Pag cheese", d:"From the island up the coast, sheep grazing on salt-blown herbs. Vacuum-sealed wheels travel well.", c:"44.1163,15.2270"}
+  ],
+  screen:[
+    {n:"Voštarnica quarter", f:"The Terminal List: Dark Wolf", y:"2025", r:"Mosul, Iraq",
+     d:"The production did not come for the Roman forum. It came for the peeling twentieth-century facades of the old Vošta works east of the bridge, which pass convincingly for northern Iraq.",
+     x:"A working district, not a sight. Twenty minutes out along the harbour if you are curious.",
+     c:"44.1213,15.2338"},
+    {n:"Zrmanja canyon & Paklenica", f:"The Winnetou films", y:"1963–68", r:"The American West",
+     d:"Seven of the eleven Karl May westerns were shot in the limestone canyons behind Zadar. An entire German generation pictures the Wild West and sees Velebit. Starigrad keeps a permanent exhibit in the hotel the crew used.",
+     x:"Paklenica's gate is about 45 minutes north by road and the Zrmanja viewpoints further again. A full day, not a port call.",
+     c:"44.3014,15.4661"},
+    {n:"The old town", f:"The Day of the Jackal", y:"2024", r:"European exteriors",
+     d:"Zadar turns up in the Sky and Peacock remake among a long list of European locations. The production never published a scene map, so treat any precise claim made to you on the quay as sales patter.",
+     x:"",
+     c:"44.1155,15.2245"}
   ],
   know:[
     "The sunset here is the whole point of a late all-aboard. If the ship leaves before dark you are missing the headline act.",
@@ -529,15 +734,29 @@ const PORTS = [
      c:"45.5274,13.5697"}
   ],
   eat:[
-    {n:"Pri Mari", t:"Sit-down", d:"Slovenian-Italian, run by a couple who cook what the boats brought. Reserve — it is small and locals fill it."},
-    {n:"Fritolin pri Cantini", t:"Fast", d:"Order at the hatch, eat at a bench on the square. Fried calamari and a paper cone of small fish."},
-    {n:"Cantina Klet", t:"Wine bar", d:"On Trg 1. Maja. Wine from the barrel in plastic cups, cheese and prosciutto plates, no pretension whatever."},
-    {n:"Ivo", t:"Waterfront", d:"On the promenade toward the point. Straightforward grilled fish with a sea table."}
+    {n:"Pri Mari", t:"Sit-down", d:"Slovenian-Italian, run by a couple who cook what the boats brought. Reserve — it is small and locals fill it.", c:"45.5265,13.5709"},
+    {n:"Fritolin pri Cantini", t:"Fast", d:"Order at the hatch, eat at a bench on the square. Fried calamari and a paper cone of small fish.", c:"45.5289,13.5691"},
+    {n:"Cantina Klet", t:"Wine bar", d:"On Trg 1. Maja. Wine from the barrel in plastic cups, cheese and prosciutto plates, no pretension whatever.", c:"45.5289,13.5690"},
+    {n:"Ivo", t:"Waterfront", d:"On the promenade toward the point. Straightforward grilled fish with a sea table.", c:"45.5290,13.5665"}
   ],
   buy:[
-    {n:"Piran salt & fleur de sel", d:"Hand-raked at Sečovlje on a microbial mat that has been maintained for seven hundred years. Flor de sal is the top grade — buy it from Piranske Soline, the producer's own shop."},
-    {n:"Salt-pan cosmetics", d:"Brine mud and salt-flower creams from the same pans. Sold at the Lepa Vida shop."},
-    {n:"Istrian olive oil", d:"Slovenian Istria's oils win international medals and are barely exported. Look for a harvest date on the bottle."}
+    {n:"Piran salt & fleur de sel", d:"Hand-raked at Sečovlje on a microbial mat that has been maintained for seven hundred years. Flor de sal is the top grade — buy it from Piranske Soline, the producer's own shop.", c:"45.5281,13.5688"},
+    {n:"Salt-pan cosmetics", d:"Brine mud and salt-flower creams from the same pans. Sold at the Lepa Vida shop.", c:"45.5280,13.5690"},
+    {n:"Istrian olive oil", d:"Slovenian Istria's oils win international medals and are barely exported. Look for a harvest date on the bottle.", c:"45.5282,13.5686"}
+  ],
+  screen:[
+    {n:"Tartini Square & the walls", f:"The Union", y:"2024", r:"The chase",
+     d:"Netflix put Halle Berry and Mark Wahlberg through the old town for two weeks — the square, the ramparts above it and the seafront all take a turn.",
+     x:"",
+     c:"45.5281,13.5686"},
+    {n:"Prvomajski trg (1 May Square)", f:"Our Car · Summer in a Seashell", y:"1962 · 1986", r:"Slovenia's most filmed square",
+     d:"The old cistern square behind Tartini is where František Čap set his 1962 comedy and where Tugo Štiglic shot the biggest Slovene hit of the 1980s. The European Film Academy has listed it as a Treasure of European Film Culture.",
+     x:"Two minutes uphill from Tartini, and almost always empty.",
+     c:"45.5289,13.5691"},
+    {n:"The town itself", f:"František Čap's Piran", y:"1953–72", r:"A director's adopted set",
+     d:"The Czech director moved here in the 1950s and made eleven films in the town, which is why so much of Yugoslav cinema is set on this one small peninsula. More than fifty productions have shot in and around Piran since.",
+     x:"",
+     c:"45.5274,13.5697"}
   ],
   know:[
     "Slovenia uses the euro and is in Schengen — no border formality from Italy, but there is one from Croatia.",
@@ -567,6 +786,18 @@ const getDone = () => { try{ return JSON.parse(store.get(doneKey(cur)) || "[]");
 const setDone = a => store.set(doneKey(cur), JSON.stringify(a));
 const timeKey = (id,which) => "sb." + which + "." + id;
 
+/* chart state */
+const KIND = {
+  walk:   {t:"Stops",  col:"#131E28"},
+  eat:    {t:"Eat",    col:"#8C2F39"},
+  buy:    {t:"Buy",    col:"#1D5A6E"},
+  screen: {t:"Screen", col:"#8A6B1F"}
+};
+const layers = {walk:true, eat:true, buy:true, screen:true};
+let fitAll = false;
+let sel = null;                 /* "walk:3" */
+const TOWN_KM = 1.5;            /* anything further is plotted off-chart */
+
 /* ============================================================
    HELPERS
    ============================================================ */
@@ -580,8 +811,54 @@ function nowMins(){ const d = new Date(); return d.getHours()*60 + d.getMinutes(
 function clockFromMins(m){ m = ((m % 1440) + 1440) % 1440;
   return String(Math.floor(m/60)).padStart(2,"0") + ":" + String(m%60).padStart(2,"0"); }
 
+/* --- geography --------------------------------------------- */
+const RAD = Math.PI/180;
+function ll(c){
+  if(!c) return null;
+  const p = String(c).split(",").map(Number);
+  return (p.length===2 && isFinite(p[0]) && isFinite(p[1])) ? {lat:p[0], lon:p[1]} : null;
+}
+function kmBetween(a,b){
+  const dLat=(b.lat-a.lat)*RAD, dLon=(b.lon-a.lon)*RAD;
+  const s = Math.sin(dLat/2)**2 +
+            Math.cos(a.lat*RAD)*Math.cos(b.lat*RAD)*Math.sin(dLon/2)**2;
+  return 2*6371*Math.asin(Math.min(1,Math.sqrt(s)));
+}
+const COMPASS = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
+function compass(a,b){
+  const y = Math.sin((b.lon-a.lon)*RAD)*Math.cos(b.lat*RAD);
+  const x = Math.cos(a.lat*RAD)*Math.sin(b.lat*RAD) -
+            Math.sin(a.lat*RAD)*Math.cos(b.lat*RAD)*Math.cos((b.lon-a.lon)*RAD);
+  const deg = (Math.atan2(y,x)/RAD + 360) % 360;
+  return COMPASS[Math.round(deg/22.5) % 16];
+}
+const dist = km => km < 1 ? Math.round(km*1000) + " m" : km.toFixed(km<10?1:0) + " km";
+
+/* --- the one list everything else reads --------------------- */
+function points(p){
+  const out = [];
+  p.stops.forEach((s,i) => out.push(
+    {k:"walk", i, num:i+1, n:s.n, c:s.c, sub:s.dur+" min", d:s.w, x:s.x}));
+  (p.eat||[]).forEach((s,i) => out.push(
+    {k:"eat", i, num:i+1, n:s.n, c:s.c, sub:"", tag:s.t, d:s.d}));
+  (p.buy||[]).forEach((s,i) => out.push(
+    {k:"buy", i, num:i+1, n:s.n, c:s.c, sub:"", d:s.d}));
+  (p.screen||[]).forEach((s,i) => out.push(
+    {k:"screen", i, num:i+1, n:s.n, c:s.c, sub:s.f + " · " + s.y, tag:s.r, d:s.d, x:s.x}));
+  return out;
+}
+const keyOf = o => o.k + ":" + o.i;
+const plotted = p => points(p).filter(o => ll(o.c));
+function townCentre(p){
+  const pts = p.stops.map(s => ll(s.c)).filter(Boolean);
+  if(!pts.length) return {lat:0, lon:0};
+  return {lat: pts.reduce((a,b)=>a+b.lat,0)/pts.length,
+          lon: pts.reduce((a,b)=>a+b.lon,0)/pts.length};
+}
+const mapsHref = (c,n) => "https://maps.apple.com/?ll=" + c + "&q=" + encodeURIComponent(n);
+
 /* ============================================================
-   RENDER
+   RENDER — head, ports, tide
    ============================================================ */
 function renderPortRail(){
   $("#portRail").innerHTML = PORTS.map(p =>
@@ -615,6 +892,9 @@ function renderTide(){
   }
 }
 
+/* ============================================================
+   RENDER — walk
+   ============================================================ */
 function renderWalk(){
   const p = port(), done = getDone();
   let out = "";
@@ -650,8 +930,8 @@ function renderWalk(){
         '<p>' + esc(s.w) + '</p>' +
         (s.l ? '<div class="look"><b>Look for</b>' + esc(s.l) + '</div>' : '') +
         (s.x ? '<p style="margin-top:8px;color:var(--mute);font-size:13.5px">' + esc(s.x) + '</p>' : '') +
-        '<a class="geo" href="https://maps.apple.com/?ll=' + s.c + '&q=' + encodeURIComponent(s.n) +
-          '">' + s.c + ' · open in Maps</a>' +
+        '<a class="geo" href="' + mapsHref(s.c, s.n) + '">' + s.c + ' · Maps</a>' +
+        '<button class="geo btn" data-goto="walk:' + i + '">On chart</button>' +
         (i < p.stops.length-1 ? '<div class="leg">&darr; ' + s.leg + ' min walk to ' +
           esc(p.stops[i+1].n) + '</div>' : '') +
       '</div></li>';
@@ -660,18 +940,277 @@ function renderWalk(){
   return out;
 }
 
-function renderList(items, tagKey){
-  return items.map(x =>
-    '<div class="entry"><div class="entry-head"><span class="entry-name">' + esc(x.n) + '</span>' +
-    (x.t ? '<span class="entry-tag">' + esc(x.t) + '</span>' : '') +
-    '</div><p>' + esc(x.d) + '</p></div>').join("");
+/* ============================================================
+   RENDER — cards
+   ============================================================ */
+function glyph(k, num){
+  return '<span class="gly k-' + k + '" aria-hidden="true"><i>' + num + '</i></span>';
 }
 
+function card(o){
+  const k = keyOf(o), L = ll(o.c);
+  return '<article class="card' + (sel===k ? " hi" : "") + '" id="card-' + k + '">' +
+    '<div class="card-head">' + glyph(o.k, o.num) +
+      '<div class="card-title"><span class="card-name">' + esc(o.n) + '</span>' +
+        (o.sub ? '<span class="card-meta">' + esc(o.sub) + '</span>' : '') +
+        (o.tag ? '<span class="entry-tag">' + esc(o.tag) + '</span>' : '') + '</div>' +
+    '</div>' +
+    '<p>' + esc(o.d) + '</p>' +
+    (o.x ? '<p class="note">' + esc(o.x) + '</p>' : '') +
+    '<div class="card-foot">' +
+      (L ? '<span class="coord">' + esc(o.c) + '</span>' +
+           '<a href="' + mapsHref(o.c, o.n) + '">Open in Maps</a>' +
+           '<button data-goto="' + k + '">Show on chart</button>'
+         : '<span class="coord">No pin — nothing was filmed here</span>') +
+    '</div></article>';
+}
+
+function renderCards(kind, note){
+  const list = points(port()).filter(o => o.k === kind);
+  if(!list.length) return '<p class="sec-note">Nothing listed for this port.</p>';
+  return (note ? '<p class="sec-note">' + note + '</p>' : '') +
+         list.map(card).join("");
+}
+
+/* ============================================================
+   RENDER — chart (inline SVG, no tiles, no network)
+   ============================================================ */
+const VB = {w:380, l:24, r:12, t:12, b:24};   /* height is set per chart, from the ground */
+const GRID_STEPS = [0.5,0.2,0.1,0.05,0.02,0.01,0.005,0.002,0.001,0.0005];
+const BAR_STEPS  = [10,20,50,100,200,500,1000,2000,5000,10000,20000,50000];
+
+function niceStep(span){
+  for(const s of GRID_STEPS){ const n = span/s; if(n >= 2 && n <= 6) return s; }
+  return GRID_STEPS[GRID_STEPS.length-1];
+}
+
+function buildChart(){
+  const p = port();
+  const centre = townCentre(p);
+  const all = plotted(p).map(o => Object.assign({}, o, {ll: ll(o.c)}));
+  const near = all.filter(o => kmBetween(centre, o.ll) <= TOWN_KM);
+  const far  = all.filter(o => kmBetween(centre, o.ll) >  TOWN_KM);
+  const pool = fitAll ? all : near;
+  const shown = pool.filter(o => layers[o.k]);
+
+  /* --- toolbar ------------------------------------------------ */
+  let html = '<div class="tools">' +
+    Object.keys(KIND).map(k => {
+      const n = all.filter(o => o.k===k).length;
+      return '<button class="lay" data-layer="' + k + '" aria-pressed="' + !!layers[k] + '">' +
+        '<span class="sw k-' + k + '"></span>' + esc(KIND[k].t) + ' ' + n + '</button>';
+    }).join("") +
+    '<button class="lay" data-fit="1" aria-pressed="' + fitAll + '">' +
+      (fitAll ? "Whole coast" : "Town only") + '</button>' +
+    '<button class="lay" data-gpx="1">Download .gpx</button>' +
+  '</div>';
+
+  if(!shown.length){
+    return html + '<div class="chart-frame"><div class="chart-empty">' +
+      'Nothing to plot — switch a layer back on.</div></div>' + offList(far, centre);
+  }
+
+  /* --- projection: equirectangular, north up ------------------ */
+  const kx = Math.cos(centre.lat * RAD);
+  const px = o => o.ll.lon * kx, py = o => -o.ll.lat;
+  let x0 = Math.min(...shown.map(px)), x1 = Math.max(...shown.map(px));
+  let y0 = Math.min(...shown.map(py)), y1 = Math.max(...shown.map(py));
+  const MINSPAN = 0.0035;                       /* ~390 m — stops absurd zoom */
+  if(x1-x0 < MINSPAN*kx){ const m=(x0+x1)/2, h=MINSPAN*kx/2; x0=m-h; x1=m+h; }
+  if(y1-y0 < MINSPAN){ const m=(y0+y1)/2, h=MINSPAN/2; y0=m-h; y1=m+h; }
+  const padX = (x1-x0)*0.10, padY = (y1-y0)*0.10;
+  x0-=padX; x1+=padX; y0-=padY; y1+=padY;
+
+  /* the frame takes the shape of the ground, within reason — no dead paper */
+  const iw = VB.w - VB.l - VB.r;
+  const ih = Math.round(Math.min(Math.max(iw*((y1-y0)/(x1-x0)), iw*0.62), iw*1.30));
+  const H  = ih + VB.t + VB.b;
+  const scale = Math.min(iw/(x1-x0), ih/(y1-y0));
+  const cx = (x0+x1)/2, cy = (y0+y1)/2;
+  const SX = v => VB.l + iw/2 + (v - cx)*scale;
+  const SY = v => VB.t + ih/2 + (v - cy)*scale;
+
+  /* --- graticule ---------------------------------------------- */
+  const latStep = niceStep((y1-y0)), lonStep = niceStep((x1-x0)/kx);
+  const dec = s => Math.max(0, Math.ceil(-Math.log10(s)));
+  let grid = "", ticks = "";
+  const latLo = Math.ceil(-y1/latStep)*latStep, latHi = -y0;
+  for(let v=latLo; v<=latHi+1e-9; v+=latStep){
+    const Y = SY(-v);
+    grid += '<line x1="' + VB.l + '" y1="' + Y.toFixed(1) + '" x2="' + (VB.w-VB.r) +
+            '" y2="' + Y.toFixed(1) + '"/>';
+    ticks += '<text x="' + (VB.l-3) + '" y="' + (Y+3).toFixed(1) +
+             '" text-anchor="end" class="tk">' + v.toFixed(dec(latStep)) + '</text>';
+  }
+  const lonLo = Math.ceil((x0/kx)/lonStep)*lonStep, lonHi = x1/kx;
+  for(let v=lonLo; v<=lonHi+1e-9; v+=lonStep){
+    const X = SX(v*kx);
+    grid += '<line x1="' + X.toFixed(1) + '" y1="' + VB.t + '" x2="' + X.toFixed(1) +
+            '" y2="' + (H-VB.b) + '"/>';
+    ticks += '<text x="' + X.toFixed(1) + '" y="' + (H-VB.b+11) +
+             '" text-anchor="middle" class="tk">' + v.toFixed(dec(lonStep)) + '</text>';
+  }
+
+  /* --- walk route --------------------------------------------- */
+  let route = "";
+  const walk = shown.filter(o => o.k==="walk").sort((a,b)=>a.i-b.i);
+  if(walk.length > 1){
+    route = '<polyline class="route" points="' +
+      walk.map(o => SX(px(o)).toFixed(1) + "," + SY(py(o)).toFixed(1)).join(" ") + '"/>';
+  }
+
+  /* --- de-collide markers, keeping a leader to the true spot --- */
+  const nodes = shown.map(o => {
+    const X = SX(px(o)), Y = SY(py(o));
+    return {o, x0:X, y0:Y, x:X, y:Y};
+  });
+  const MIN = 22, CAP = 26;
+  for(let it=0; it<90; it++){
+    for(let i=0;i<nodes.length;i++){
+      for(let j=i+1;j<nodes.length;j++){
+        const a=nodes[i], b=nodes[j];
+        let dx=b.x-a.x, dy=b.y-a.y, d=Math.hypot(dx,dy);
+        if(d >= MIN) continue;
+        if(d < 0.01){ dx = (i%2?1:-1)*0.6; dy = (j%2?1:-1)*0.6; d = Math.hypot(dx,dy); }
+        const push = (MIN-d)/2 * 0.45 / d;
+        a.x -= dx*push; a.y -= dy*push; b.x += dx*push; b.y += dy*push;
+      }
+    }
+    nodes.forEach(n => { n.x += (n.x0-n.x)*0.03; n.y += (n.y0-n.y)*0.03; });
+  }
+  nodes.forEach(n => {
+    let dx=n.x-n.x0, dy=n.y-n.y0, d=Math.hypot(dx,dy);
+    if(d > CAP){ n.x = n.x0 + dx/d*CAP; n.y = n.y0 + dy/d*CAP; }
+    n.x = Math.max(VB.l+11, Math.min(VB.w-VB.r-11, n.x));
+    n.y = Math.max(VB.t+11, Math.min(H-VB.b-11, n.y));
+  });
+
+  let leaders = "", pins = "";
+  nodes.forEach(n => {
+    const k = keyOf(n.o), isSel = sel === k, col = KIND[n.o.k].col;
+    if(Math.hypot(n.x-n.x0, n.y-n.y0) > 4){
+      leaders += '<line class="lead" x1="' + n.x0.toFixed(1) + '" y1="' + n.y0.toFixed(1) +
+                 '" x2="' + n.x.toFixed(1) + '" y2="' + n.y.toFixed(1) + '"/>' +
+                 '<circle class="true" cx="' + n.x0.toFixed(1) + '" cy="' + n.y0.toFixed(1) + '" r="1.4"/>';
+    }
+    let shape;
+    if(n.o.k === "walk")      shape = '<circle r="9.6" fill="' + col + '"/>';
+    else if(n.o.k === "eat")  shape = '<rect x="-8.4" y="-8.4" width="16.8" height="16.8" fill="' + col + '"/>';
+    else if(n.o.k === "buy")  shape = '<rect x="-8" y="-8" width="16" height="16" transform="rotate(45)" fill="' + col + '"/>';
+    else                      shape = '<circle r="9.8" fill="' + col + '"/>' +
+                                      '<circle r="7.2" fill="none" stroke="#FBFAF6" stroke-width="1"/>';
+    pins += '<g class="pin" data-pin="' + k + '" transform="translate(' + n.x.toFixed(1) + ',' +
+              n.y.toFixed(1) + ')" role="button" tabindex="0" aria-label="' + esc(n.o.n) + '">' +
+              (isSel ? '<circle class="halo" r="15"/>' : '') + shape +
+              '<text y="3.3" text-anchor="middle">' + n.o.num + '</text></g>';
+  });
+
+  /* --- scale bar and north arrow ------------------------------ */
+  const mPerUnit = 110574/scale;
+  let barM = BAR_STEPS[0];
+  for(const s of BAR_STEPS){ barM = s; if(s/mPerUnit >= 45) break; }
+  const barLen = barM/mPerUnit;
+  const bx = VB.l + 4, by = H - VB.b - 8;
+  const bar = '<g class="bar"><line x1="' + bx + '" y1="' + by + '" x2="' + (bx+barLen).toFixed(1) +
+    '" y2="' + by + '"/><line x1="' + bx + '" y1="' + (by-3) + '" x2="' + bx + '" y2="' + (by+3) + '"/>' +
+    '<line x1="' + (bx+barLen).toFixed(1) + '" y1="' + (by-3) + '" x2="' + (bx+barLen).toFixed(1) +
+    '" y2="' + (by+3) + '"/><text x="' + (bx+barLen/2).toFixed(1) + '" y="' + (by-6) +
+    '" text-anchor="middle" class="tk">' + (barM<1000 ? barM+" m" : (barM/1000)+" km") + '</text></g>';
+  const nx = VB.w - VB.r - 12, ny = VB.t + 10;
+  const north = '<g class="rose"><line x1="' + nx + '" y1="' + (ny+16) + '" x2="' + nx + '" y2="' + ny +
+    '"/><polygon points="' + nx + ',' + (ny-4) + ' ' + (nx-3.2) + ',' + (ny+2) + ' ' +
+    (nx+3.2) + ',' + (ny+2) + '"/><text x="' + nx + '" y="' + (ny+26) +
+    '" text-anchor="middle" class="tk">N</text></g>';
+
+  html += '<div class="chart-frame"><svg viewBox="0 0 ' + VB.w + ' ' + H +
+    '" role="img" aria-label="Chart of ' + esc(p.name) + '">' +
+    '<g class="gr">' + grid + '</g>' +
+    '<rect class="frm" x="' + VB.l + '" y="' + VB.t + '" width="' + iw + '" height="' + ih + '"/>' +
+    ticks + route + leaders + bar + north + pins +
+  '</svg></div>';
+
+  /* --- selected detail ---------------------------------------- */
+  const chosen = shown.find(o => keyOf(o) === sel);
+  if(chosen) html += card(chosen);
+
+  /* --- index and off-chart ------------------------------------ */
+  html += '<div class="index"><h3>Index</h3>' + shown.map(o => {
+    const k = keyOf(o);
+    return '<button class="ixrow" data-pin="' + k + '" aria-current="' + (sel===k) + '">' +
+      glyph(o.k, o.num) + '<span class="ixname">' + esc(o.n) + '</span>' +
+      '<span class="ixsub">' + esc(KIND[o.k].t) + '</span></button>';
+  }).join("") +
+  '<p class="sec-note" style="margin-top:12px">Decimal degrees, WGS 84 — the same numbers your ' +
+  'phone reads. Stops and landmarks are surveyed to the door; kitchens, shops and film marks are ' +
+  'good to a block, which is all you need on foot. Where two pins would collide the marker is ' +
+  'nudged clear and a hairline points back to the true position.</p></div>';
+
+  html += offList(far, centre);
+  return html;
+}
+
+function offList(far, centre){
+  if(fitAll || !far.length) return "";
+  const rows = far.filter(o => layers[o.k]).sort((a,b) =>
+    kmBetween(centre,a.ll) - kmBetween(centre,b.ll));
+  if(!rows.length) return "";
+  return '<div class="off"><h3>Off the chart</h3>' + rows.map(o =>
+    '<div class="offrow">' + glyph(o.k, o.num) +
+      '<span class="oname">' + esc(o.n) +
+        '<span class="osub">' + esc(o.sub || "") + '</span></span>' +
+      '<span class="bearing">' + compass(centre, o.ll) + ' ' + dist(kmBetween(centre, o.ll)) + '</span>' +
+    '</div>').join("") +
+    '<p class="sec-note" style="margin-top:10px">Bearings and distances are from the middle of the ' +
+    'old town. Switch the chart to <strong>whole coast</strong> to plot them.</p></div>';
+}
+
+/* ============================================================
+   GPX — hand the whole port to any map app, offline
+   ============================================================ */
+function gpxFor(p){
+  const x = s => String(s==null?"":s).replace(/[&<>'"]/g,
+    c => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&apos;",'"':"&quot;"}[c]));
+  const wpts = plotted(p).map(o => {
+    const L = ll(o.c);
+    return '  <wpt lat="' + L.lat + '" lon="' + L.lon + '">\n' +
+      '    <name>' + x(KIND[o.k].t.toUpperCase().slice(0,1) + o.num + " " + o.n) + '</name>\n' +
+      '    <desc>' + x((o.sub ? o.sub + " — " : "") + (o.d||"")) + '</desc>\n' +
+      '    <type>' + o.k + '</type>\n  </wpt>';
+  }).join("\n");
+  const rte = '  <rte>\n    <name>' + x(p.name + " — walking order") + '</name>\n' +
+    p.stops.filter(s => ll(s.c)).map(s => { const L = ll(s.c);
+      return '    <rtept lat="' + L.lat + '" lon="' + L.lon + '"><name>' + x(s.n) + '</name></rtept>';
+    }).join("\n") + '\n  </rte>';
+  return '<?xml version="1.0" encoding="UTF-8"?>\n' +
+    '<gpx version="1.1" creator="Shore Book · Adriatic 2026" ' +
+    'xmlns="http://www.topografix.com/GPX/1/1">\n' +
+    '  <metadata><name>' + x("Shore Book — " + p.name) + '</name></metadata>\n' +
+    wpts + '\n' + rte + '\n</gpx>\n';
+}
+
+function download(name, text, mime){
+  try{
+    const url = URL.createObjectURL(new Blob([text], {type:mime}));
+    const a = document.createElement("a");
+    a.href = url; a.download = name; a.style.display = "none";
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1500);
+  }catch(e){
+    window.open("data:" + mime + ";charset=utf-8," + encodeURIComponent(text), "_blank");
+  }
+}
+
+/* ============================================================
+   RENDER — panel
+   ============================================================ */
 function renderPanel(){
   const p = port();
-  if(tab === "walk") $("#panel").innerHTML = renderWalk();
-  else if(tab === "eat") $("#panel").innerHTML = renderList(p.eat);
-  else if(tab === "buy") $("#panel").innerHTML = renderList(p.buy);
+  if(tab === "walk")        $("#panel").innerHTML = renderWalk();
+  else if(tab === "eat")    $("#panel").innerHTML = renderCards("eat");
+  else if(tab === "buy")    $("#panel").innerHTML = renderCards("buy");
+  else if(tab === "screen") $("#panel").innerHTML = renderCards("screen",
+    "What was filmed here, and what only pretends to have been. Everything below is a real location you can stand on unless the card says otherwise.");
+  else if(tab === "chart")  $("#panel").innerHTML = buildChart();
   else $("#panel").innerHTML = '<ul class="know">' +
     p.know.map(k => "<li>" + esc(k) + "</li>").join("") + "</ul>";
 }
@@ -687,10 +1226,33 @@ function renderAll(){
    ============================================================ */
 document.addEventListener("click", e => {
   const pb = e.target.closest("[data-port]");
-  if(pb){ cur = pb.dataset.port; store.set("sb.port", cur); renderAll(); window.scrollTo(0,0); return; }
+  if(pb){ cur = pb.dataset.port; sel = null; store.set("sb.port", cur);
+    renderAll(); window.scrollTo(0,0); return; }
 
   const tb = e.target.closest(".tab");
   if(tb){ tab = tb.dataset.tab; renderAll(); return; }
+
+  const lay = e.target.closest("[data-layer]");
+  if(lay){ const k = lay.dataset.layer; layers[k] = !layers[k];
+    if(sel && sel.split(":")[0] === k && !layers[k]) sel = null;
+    renderPanel(); return; }
+
+  const fit = e.target.closest("[data-fit]");
+  if(fit){ fitAll = !fitAll; renderPanel(); return; }
+
+  const gp = e.target.closest("[data-gpx]");
+  if(gp){ const p = port();
+    download("shore-book-" + p.id + ".gpx", gpxFor(p), "application/gpx+xml"); return; }
+
+  const pin = e.target.closest("[data-pin]");
+  if(pin){ const k = pin.dataset.pin; sel = (sel === k) ? null : k; renderPanel();
+    const c = sel && $("#card-" + CSS.escape(sel));
+    if(c) c.scrollIntoView({block:"nearest", behavior:"smooth"});
+    return; }
+
+  const go = e.target.closest("[data-goto]");
+  if(go){ sel = go.dataset.goto; tab = "chart"; renderAll();
+    window.scrollTo({top:0, behavior:"smooth"}); return; }
 
   const chk = e.target.closest("[data-check]");
   if(chk){
@@ -701,6 +1263,15 @@ document.addEventListener("click", e => {
 
   const op = e.target.closest("[data-open]");
   if(op){ op.parentElement.classList.toggle("open"); return; }
+});
+
+/* pins are SVG groups — give them a keyboard */
+document.addEventListener("keydown", e => {
+  if(e.key !== "Enter" && e.key !== " ") return;
+  const pin = e.target.closest && e.target.closest("g[data-pin]");
+  if(!pin) return;
+  e.preventDefault();
+  const k = pin.dataset.pin; sel = (sel === k) ? null : k; renderPanel();
 });
 
 $("#ashore").addEventListener("change", e => {
