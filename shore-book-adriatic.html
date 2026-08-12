@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Shore Book">
+<meta name="theme-color" content="#EDEAE1">
+<title>Shore Book · Adriatic 2026</title>
+<style>
+:root{
+  --stone:#EDEAE1;
+  --sand:#FBFAF6;
+  --ink:#131E28;
+  --sea:#1D5A6E;
+  --sea-tint:#DDE7E9;
+  --rosso:#8C2F39;
+  --rule:#C9C6BB;
+  --mute:#6E7378;
+  --display:"Didot","Bodoni 72",Didot LT STD,"Hoefler Text",Georgia,serif;
+  --body:"Avenir Next",Avenir,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --mono:"Menlo","SF Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--stone);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:16px;
+  line-height:1.5;
+  padding-bottom:env(safe-area-inset-bottom);
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:620px;margin:0 auto;padding:0 18px 72px}
+
+/* ---------- masthead ---------- */
+header{padding:22px 0 0}
+.kicker{
+  font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--mute);display:flex;justify-content:space-between;align-items:baseline;
+}
+h1{
+  font-family:var(--display);font-weight:400;font-size:44px;line-height:.95;
+  margin:8px 0 2px;letter-spacing:-.01em;
+}
+.sub{font-size:13px;color:var(--mute);margin:0 0 14px}
+
+/* ---------- port rail ---------- */
+.ports{display:flex;gap:6px;overflow-x:auto;padding:0 0 12px;margin:0 -18px;
+  padding-left:18px;padding-right:18px;scrollbar-width:none}
+.ports::-webkit-scrollbar{display:none}
+.port-btn{
+  flex:0 0 auto;background:transparent;border:1px solid var(--rule);
+  border-radius:2px;padding:7px 12px;font-family:var(--mono);font-size:11px;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--mute);cursor:pointer;
+}
+.port-btn[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--stone)}
+.port-btn:focus-visible{outline:2px solid var(--sea);outline-offset:2px}
+
+/* ---------- tide bar (signature) ---------- */
+.tide{border:1px solid var(--ink);background:var(--sand);padding:12px 13px 11px;margin:2px 0 18px}
+.tide-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.tide-label{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
+.tide-clock{font-family:var(--display);font-size:30px;line-height:1;font-variant-numeric:tabular-nums}
+.tide-clock.warn{color:var(--rosso)}
+.tide-track{
+  position:relative;height:16px;margin:10px 0 8px;border:1px solid var(--rule);
+  background:repeating-linear-gradient(-45deg,transparent 0 4px,var(--rule) 4px 5px);
+}
+.tide-fill{position:absolute;inset:0 auto 0 0;background:var(--sea-tint);
+  border-right:2px solid var(--sea);transition:width .6s ease}
+@media (prefers-reduced-motion:reduce){.tide-fill{transition:none}}
+.tide-foot{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--mute)}
+.tide-foot input{
+  font-family:var(--mono);font-size:12px;border:0;border-bottom:1px solid var(--rule);
+  background:transparent;color:var(--ink);padding:1px 0;
+}
+.tide-foot input:focus{outline:none;border-bottom-color:var(--sea)}
+
+/* ---------- dock strip ---------- */
+.dock{border-left:3px solid var(--sea);padding:2px 0 2px 12px;margin:0 0 20px;font-size:14px}
+.dock b{font-weight:600}
+.dock span{display:block;color:var(--mute);font-size:13px;margin-top:2px}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;border-bottom:1px solid var(--rule);margin:0 0 18px}
+.tab{
+  flex:1;background:none;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;
+  padding:9px 2px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--mute);cursor:pointer;
+}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--rosso)}
+.tab:focus-visible{outline:2px solid var(--sea);outline-offset:-2px}
+
+/* ---------- sounding rail (stops) ---------- */
+.rail{position:relative;margin:0;padding:0 0 0 34px;list-style:none}
+.rail::before{content:"";position:absolute;left:9px;top:10px;bottom:26px;
+  width:1px;background:var(--rule)}
+.stop{position:relative;padding:0 0 20px}
+.dot{
+  position:absolute;left:-34px;top:2px;width:19px;height:19px;border-radius:50%;
+  border:1px solid var(--ink);background:var(--stone);color:var(--ink);
+  font-family:var(--mono);font-size:10px;line-height:17px;text-align:center;
+  cursor:pointer;padding:0;
+}
+.stop.done .dot{background:var(--ink);color:var(--stone)}
+.stop.done .stop-name{text-decoration:line-through;color:var(--mute)}
+.dot:focus-visible{outline:2px solid var(--sea);outline-offset:2px}
+.stop-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+  cursor:pointer}
+.stop-name{font-family:var(--display);font-size:21px;line-height:1.15}
+.stop-dur{font-family:var(--mono);font-size:11px;color:var(--mute);white-space:nowrap}
+.stop-body{display:none;padding:6px 0 0}
+.stop.open .stop-body{display:block}
+.stop-body p{margin:0 0 8px;font-size:14.5px}
+.look{border-left:2px solid var(--rosso);padding-left:10px;font-size:13.5px;color:var(--ink)}
+.look b{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--rosso);display:block;margin-bottom:2px;font-weight:400}
+.leg{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--mute);margin-top:10px}
+.geo{display:inline-block;margin-top:9px;font-family:var(--mono);font-size:11px;
+  color:var(--sea);text-decoration:none;border-bottom:1px solid var(--sea-tint)}
+
+/* ---------- projection ---------- */
+.proj{border:1px dashed var(--rule);background:var(--sand);padding:11px 13px;margin:0 0 20px;
+  font-size:13.5px}
+.proj b{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--mute);display:block;margin-bottom:3px;font-weight:400}
+.proj.tight{border-color:var(--rosso);border-style:solid}
+.proj.tight strong{color:var(--rosso)}
+
+/* ---------- lists ---------- */
+.entry{border-top:1px solid var(--rule);padding:12px 0}
+.entry:first-child{border-top:0}
+.entry-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.entry-name{font-family:var(--display);font-size:19px}
+.entry-tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--sea);white-space:nowrap;border:1px solid var(--sea-tint);padding:2px 5px}
+.entry p{margin:5px 0 0;font-size:14px;color:var(--ink)}
+.know li{font-size:14.5px;margin-bottom:9px}
+.know{padding-left:18px}
+
+/* ---------- footer ---------- */
+footer{border-top:1px solid var(--rule);margin-top:26px;padding:14px 0 0;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--mute);
+  display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.reset{background:none;border:0;color:var(--mute);font:inherit;text-decoration:underline;
+  cursor:pointer;padding:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker"><span>Shore Book</span><span id="today">—</span></div>
+  <h1 id="portName">—</h1>
+  <p class="sub" id="portSub">—</p>
+</header>
+
+<div class="ports" role="tablist" aria-label="Ports" id="portRail"></div>
+
+<section class="tide" aria-live="polite">
+  <div class="tide-top">
+    <span class="tide-label">Back on board in</span>
+    <span class="tide-clock" id="tideClock">—</span>
+  </div>
+  <div class="tide-track"><div class="tide-fill" id="tideFill" style="width:0%"></div></div>
+  <div class="tide-foot">
+    <label>Ashore <input type="time" id="ashore" step="300"></label>
+    <label>All aboard <input type="time" id="allAboard" step="300"></label>
+  </div>
+</section>
+
+<div class="dock" id="dock"></div>
+
+<div class="tabs" role="tablist" aria-label="Sections">
+  <button class="tab" role="tab" data-tab="walk" aria-selected="true">Walk</button>
+  <button class="tab" role="tab" data-tab="eat" aria-selected="false">Eat</button>
+  <button class="tab" role="tab" data-tab="buy" aria-selected="false">Buy</button>
+  <button class="tab" role="tab" data-tab="know" aria-selected="false">Know</button>
+</div>
+
+<main id="panel"></main>
+
+<footer>
+  <span>Adriatic · September 2026</span>
+  <button class="reset" id="reset">Clear checkmarks</button>
+</footer>
+
+</div>
+
+<script>
+/* ============================================================
+   DATA — six ports. Hours and prices drift; treat as a guide.
+   ============================================================ */
+const PORTS = [
+{
+  id:"venice", name:"Venice", sub:"Italy · in port 11–14 September · Ai Reali",
+  aboard:"19:00", ashore:"09:00",
+  dock:{t:"Staying ashore — Ai Reali, Castello",
+        d:"Rialto 5 min on foot. Vaporetto: Rialto (Line 1/2) and San Zaccaria for the Giudecca side."},
+  stops:[
+    {n:"Rialto Market", dur:35, leg:6,
+     w:"The Erberia (produce) and Pescaria (fish) have fed the city from this bend in the Grand Canal since the 11th century. Best before 10:00, when it is still a working market rather than a photograph of one.",
+     l:"The stone plaques on the Pescaria columns setting minimum legal fish sizes — a medieval fisheries regulation still bolted to the wall.",
+     x:"Fish market closed Sunday and Monday. Produce closed Sunday.",
+     c:"45.4389,12.3346"},
+    {n:"Rialto Bridge", dur:10, leg:14,
+     w:"Antonio da Ponte beat Palladio and Michelangelo for the commission in 1588 and built in stone what had collapsed twice in wood.",
+     l:"Stand on the Riva del Vin side instead of the bridge itself. The bridge is better seen than stood on.",
+     x:"Crossing takes minutes at 08:00 and a quarter hour at midday.",
+     c:"45.4380,12.3358"},
+    {n:"Piazza San Marco & the Basilica", dur:70, leg:10,
+     w:"A Byzantine church in a Gothic square, plated in loot. The mosaics run to roughly four thousand square metres of gold ground.",
+     l:"The Pala d'Oro behind the high altar, and the four bronze horses upstairs in the museum — the ones outside are copies.",
+     x:"Book the basilica slot online; the walk-up line is the longest in Italy. Shoulders and knees covered. Large bags refused.",
+     c:"45.4345,12.3397"},
+    {n:"Doge's Palace", dur:80, leg:22,
+     w:"Government, courts and prison in one building — which is exactly the point the architecture is making.",
+     l:"The Bocca di Leone letterboxes for anonymous denunciations, and the tiny cell doors past the Bridge of Sighs.",
+     x:"Secret Itineraries tour is worth the premium and must be booked ahead.",
+     c:"45.4337,12.3401"},
+    {n:"Santa Maria Gloriosa dei Frari", dur:40, leg:8,
+     w:"A vast brick Franciscan barn holding Titian's Assumption above the altar — painted for this exact light, in this exact frame.",
+     l:"Titian's own tomb, and Monteverdi's, both in the same church.",
+     x:"Closed to visitors during Sunday morning mass. Small admission.",
+     c:"45.4370,12.3266"},
+    {n:"Scuola Grande di San Rocco", dur:45, leg:16,
+     w:"Tintoretto spent twenty-three years covering the ceilings and walls. It is the closest thing Venice has to a Sistine Chapel and it is usually half empty.",
+     l:"Take one of the mirrors by the door and walk the upper hall looking down — your neck will thank you.",
+     x:"Admission around €10.",
+     c:"45.4368,12.3260"},
+    {n:"Zattere at golden hour", dur:45, leg:0,
+     w:"The southern quay faces Giudecca across open water — the one place in Venice with a horizon and a breeze.",
+     l:"Palladio's Redentore directly opposite, best lit in the last hour before sunset.",
+     x:"Gelato at Nico, on the quay, since 1935.",
+     c:"45.4297,12.3245"}
+  ],
+  eat:[
+    {n:"All'Arco", t:"Cicchetti", d:"Behind the Rialto market. Standing room, whatever the market had that morning. Closes mid-afternoon and does not do dinner."},
+    {n:"Osteria alla Vedova", t:"Cicchetti", d:"Cannaregio. The meatballs are the reason people come. Cash only, no reservations for the bar."},
+    {n:"Cantina Do Mori", t:"Bacaro", d:"Operating since 1462. Dark, narrow, hung with copper. Order francobolli and an ombra."},
+    {n:"Trattoria alla Madonna", t:"Sit-down", d:"Old-guard Venetian fish near Rialto. Unfashionable in the best sense."},
+    {n:"Pasticceria Tonolo", t:"Breakfast", d:"Dorsoduro. Stand at the bar, take a krapfen, do not ask for a cappuccino after eleven."}
+  ],
+  buy:[
+    {n:"Marbled paper", d:"Legatoria Polliero by the Frari, and Il Pavone in Dorsoduro. Hand-combed, not printed — check the edge of the sheet."},
+    {n:"Murano glass", d:"Buy on Murano itself or from a shop showing the Vetro Artistico Murano trademark. Everything on the Riva degli Schiavoni is imported."},
+    {n:"Forcole and oars", d:"Saverio Pastor, near the Salute. Sculptural walnut oarlocks — a genuine Venetian craft with about three practitioners left."},
+    {n:"Burano lace", d:"Real punto in aria costs hundreds and takes months. Anything cheap is machine-made from abroad; the museum shop is honest about which is which."}
+  ],
+  know:[
+    "Vaporetto tickets must be validated at the pylon before boarding; the fine for an unvalidated ticket is steep and enforced.",
+    "Acqua alta is possible in September. The city posts raised walkway routes and sirens sound a few hours ahead.",
+    "Sitting down anywhere on Piazza San Marco with a drink costs several times the standing price, plus the orchestra surcharge.",
+    "Tap water from the public fountains is potable and cold. Carry a bottle.",
+    "Restaurants add coperto per person — it is a cover charge, not a tip, and it is legal."
+  ]
+},
+{
+  id:"dubrovnik", name:"Dubrovnik", sub:"Croatia · Gruž cruise terminal",
+  aboard:"17:30", ashore:"08:00",
+  dock:{t:"Gruž terminal — about 3 km from the Old Town",
+        d:"Bus 1A/1B or taxi to Pile Gate, 10–15 min. Walking it takes 40 min along a road with no shade. Take the bus in, consider walking back along the harbour."},
+  stops:[
+    {n:"City Walls circuit", dur:105, leg:5,
+     w:"Two kilometres of unbroken rampart, up to six metres thick on the landward side. The single best thing in the city and the reason to be at Pile Gate the moment it opens.",
+     l:"The moment the sea appears on the Bokar bastion side, and the rooftops — the brighter orange tiles mark what was rebuilt after 1991.",
+     x:"Do this FIRST, before 09:00. One-way circuit, no shade, and it becomes brutal by eleven. Entry is not cheap and cash lines are slower than card.",
+     c:"42.6414,18.1075"},
+    {n:"Onofrio's Fountain & Pile Gate", dur:10, leg:3,
+     w:"The 1438 terminus of an aqueduct running twelve kilometres from Šumet — the reason a walled city on limestone could survive a siege.",
+     l:"Sixteen carved spouts, each a different face. The water is drinkable; fill your bottle here.",
+     x:"",
+     c:"42.6414,18.1069"},
+    {n:"Franciscan Monastery pharmacy", dur:25, leg:8,
+     w:"Dispensing since 1317, which makes it one of the oldest continuously operating pharmacies in Europe. The cloister behind it is the quietest place inside the walls.",
+     l:"The apothecary jars and the 14th-century capitals in the cloister, each one carved differently.",
+     x:"Small admission for the cloister and museum.",
+     c:"42.6417,18.1083"},
+    {n:"Stradun", dur:20, leg:4,
+     w:"The main street is a filled-in channel that once separated the Roman island of Ragusa from the Slavic mainland settlement. The uniform baroque frontage is post-earthquake rebuild code from 1667.",
+     l:"The identical doorways — shop and residence combined in one arched opening, mandated after the quake.",
+     x:"Limestone polished by five centuries of feet. It is genuinely slippery in rain.",
+     c:"42.6412,18.1097"},
+    {n:"Rector's Palace & Sponza", dur:40, leg:5,
+     w:"The Rector served one month and was not permitted to leave the palace during it. Sponza next door was the customs house and mint, and survived the earthquake intact.",
+     l:"Over the Rector's Palace door: the inscription telling officials to forget private affairs. Inside Sponza, the memorial room for the 1991–95 defenders.",
+     x:"Combined museum ticket covers several sites.",
+     c:"42.6406,18.1108"},
+    {n:"Jesuit Stairs & St Ignatius", dur:20, leg:12,
+     w:"A baroque flight modelled on Rome's Spanish Steps, leading to the Jesuit church above the old town.",
+     l:"Yes, this is the walk of shame staircase. Best photographed from the top looking down, early.",
+     x:"",
+     c:"42.6397,18.1097"},
+    {n:"Buža bar", dur:45, leg:0,
+     w:"A hole cut through the seaward wall opening onto a cliff terrace. The name means, literally, hole.",
+     l:"The sign that says cold drinks and nice view — it is not exaggerating and it is not a restaurant.",
+     x:"Cash. Swimming off the rocks is permitted and popular.",
+     c:"42.6395,18.1103"}
+  ],
+  eat:[
+    {n:"Nishta", t:"Vegetarian", d:"Tiny, inventive, tucked in a side lane off Prijeko. Books out — go early or reserve."},
+    {n:"Barba", t:"Fast", d:"Octopus burger and shrimp on a stick, counter service. The right answer when the walls have destroyed you."},
+    {n:"Lucin Kantun", t:"Konoba", d:"Six tables, handwritten menu, quietly one of the best kitchens inside the walls."},
+    {n:"Dubravka 1836", t:"Terrace", d:"By Pile Gate with a view up the walls to Lovrijenac. Ordinary food, extraordinary position."},
+    {n:"Kopun", t:"Sit-down", d:"On Boškovića square. Capon in honey and orange is the historic house dish."}
+  ],
+  buy:[
+    {n:"Konavle embroidery", d:"Geometric red-and-black silk work from the valley south of town. Look for the hand-knotted reverse, not a printed panel."},
+    {n:"Red coral", d:"Zlatarna and the old goldsmiths sell Adriatic coral set in silver. Ask about origin — Mediterranean coral is regulated and papered."},
+    {n:"Arboretum soap and oils", d:"Lavender and immortelle from the Dalmatian islands, sold everywhere; the monastery and pharmacy versions are the honest ones."}
+  ],
+  know:[
+    "Croatia uses the euro. Cards are near-universal; keep €20 in coins for the bus and the Buža.",
+    "The walls close in late afternoon and the last entry is well before closing — check the board at Pile.",
+    "Cruise-day crowding peaks 10:00–14:00 inside the walls. Your own ship is part of the problem; plan around it.",
+    "Cable car to Srđ runs from just outside the Buža Gate. Ten minutes up, and the Homeland War museum at the top is sobering and good.",
+    "Free drinking water at Onofrio's fountains, both large and small."
+  ]
+},
+{
+  id:"kotor", name:"Kotor", sub:"Montenegro · alongside the walls",
+  aboard:"16:00", ashore:"07:30",
+  dock:{t:"Berth is a five-minute walk from the Sea Gate",
+        d:"The best dock in the Adriatic. Cross the road, cross the small bridge, and you are inside a medieval town."},
+  stops:[
+    {n:"Fortress climb to St John", dur:110, leg:10,
+     w:"Roughly 1,350 steps switchbacking up the cliff to the fortress at 260 m. The whole bay opens beneath you.",
+     l:"Our Lady of Remedy chapel at about the halfway point — a legitimate turnaround if the heat wins.",
+     x:"GO FIRST, at opening. There is no shade and the stone radiates heat by nine. Proper shoes, two litres of water, small entry fee. Allow 90 min up-and-down at a steady pace.",
+     c:"42.4247,18.7714"},
+    {n:"Sea Gate & Square of Arms", dur:15, leg:3,
+     w:"The 1555 Venetian main gate opens onto the largest square in the old town, once the arsenal yard.",
+     l:"The winged lion of St Mark above the gate, and the 17th-century clock tower with the pillar of shame at its foot.",
+     x:"",
+     c:"42.4247,18.7706"},
+    {n:"Cathedral of St Tryphon", dur:30, leg:4,
+     w:"Consecrated in 1166, wrecked by earthquake, and rebuilt with two mismatched towers because the money ran out.",
+     l:"The 14th-century ciborium over the altar and the reliquary chapel upstairs.",
+     x:"Shoulders covered. Small admission.",
+     c:"42.4241,18.7712"},
+    {n:"St Luke's & St Nicholas", dur:25, leg:6,
+     w:"St Luke's, from 1195, spent centuries with two altars — one Catholic, one Orthodox — serving both congregations under one roof.",
+     l:"The floor of St Luke's is paved with the gravestones of the families who built it.",
+     x:"St Nicholas next door is Orthodox and active; enter quietly.",
+     c:"42.4254,18.7716"},
+    {n:"Maritime Museum", dur:40, leg:5,
+     w:"A baroque palace of the Grgurina family, full of the model ships, portraits and instruments of a bay that produced captains for three empires.",
+     l:"The Boka Navy uniforms and the charts of the gulf.",
+     x:"Air conditioned — a useful fact after the fortress.",
+     c:"42.4250,18.7713"},
+    {n:"The back lanes", dur:35, leg:0,
+     w:"Kotor has no street names and no grid. That is the attraction. Aim vaguely and let it fail.",
+     l:"The cats. There is a cat museum, cat souvenirs, and an unbroken population of them since the sailors' era.",
+     x:"",
+     c:"42.4245,18.7715"}
+  ],
+  eat:[
+    {n:"Galion", t:"Waterfront", d:"Outside the walls facing the marina, with the walls floodlit behind. Best fish in town and the priciest."},
+    {n:"Konoba Scala Santa", t:"Konoba", d:"Traditional Montenegrin in a stone room. Njeguši prosciutto and cheese board, lamb under the sač."},
+    {n:"Bokun", t:"Wine bar", d:"Small plates and Montenegrin wine — ask for Vranac and Krstač."},
+    {n:"Ladovina", t:"Sit-down", d:"Just outside the old town, less cruise-facing, better value."}
+  ],
+  buy:[
+    {n:"Njeguši prosciutto", d:"Air-dried in the mountain village above the bay. Vacuum packs travel; check your customs allowance before buying meat."},
+    {n:"Rakija", d:"Loza (grape) and kruna (pear). Buy from a shop with a producer name on the label, not a souvenir bottle."},
+    {n:"Filigree silver", d:"Balkan wirework, sold along the lanes. Weight in the hand is the tell."}
+  ],
+  know:[
+    "Montenegro uses the euro but is not in the EU — customs allowances apply on re-entry.",
+    "The bay is a drowned river canyon, not a fjord, whatever the brochure says.",
+    "Perast and Our Lady of the Rocks are 20 minutes up the bay by road; boat shuttles run from Perast quay in minutes. Only attempt it if you skip the fortress.",
+    "Afternoon heat in the walled town is intense — the stone holds it. Plan indoors between 13:00 and 15:00.",
+    "Cash is more useful here than in Croatia. Bring small euro notes."
+  ]
+},
+{
+  id:"hvar", name:"Hvar", sub:"Croatia · tender to the town quay",
+  aboard:"18:00", ashore:"09:00",
+  dock:{t:"Tender lands on the main riva, in the middle of everything",
+        d:"Check the last tender time, not the all-aboard time — they are not the same, and the queue at the last one is long."},
+  stops:[
+    {n:"Fortica Španjola", dur:70, leg:15,
+     w:"The Venetian fortress above the town, reached by a zigzag path through Mediterranean scrub. The Pakleni islands lay out below like a chart.",
+     l:"The cisterns and the small collection of amphorae in the vaults.",
+     x:"Twenty to twenty-five minutes up at a moderate pace. Do it early or at the end of the day, never at noon. Small entry fee.",
+     c:"43.1735,16.4419"},
+    {n:"St Stephen's Square", dur:20, leg:2,
+     w:"The largest old square in Dalmatia, and until 1780 the inner harbour — the sea came up to where the well now stands.",
+     l:"The 1520 public well with its wrought-iron grille at the harbour end.",
+     x:"",
+     c:"43.1725,16.4419"},
+    {n:"Arsenal & Hvar Theatre", dur:30, leg:3,
+     w:"The arsenal repaired war galleys under its great arch. In 1612 the town put a public theatre on the upper floor — open to nobles and commoners alike, which was close to unheard of.",
+     l:"The tiny auditorium upstairs; the scale is startling after the arch below.",
+     x:"Opening is irregular. If the door is open, go in.",
+     c:"43.1723,16.4415"},
+    {n:"Cathedral of St Stephen", dur:25, leg:7,
+     w:"A Renaissance front on a Gothic body with a four-storey campanile, each level opening wider as it rises.",
+     l:"Count the arches per level on the bell tower — one, two, three, four.",
+     x:"Closed over the long lunch.",
+     c:"43.1727,16.4429"},
+    {n:"Benedictine convent — agave lace", dur:25, leg:9,
+     w:"Nuns have made lace from agave leaf fibre here since the 19th century. It is on the UNESCO intangible heritage list and is made nowhere else on earth.",
+     l:"Held to the light, agave lace is faintly translucent and slightly stiff. Nothing else looks like it.",
+     x:"Limited hours; the sisters open the room when they open it. Pieces are small and expensive and genuinely rare.",
+     c:"43.1729,16.4425"},
+    {n:"Franciscan Monastery", dur:30, leg:0,
+     w:"On the point past the harbour, with a cypress garden over the water and a very large Last Supper in the refectory.",
+     l:"The cypress in the cloister, planted around three hundred years ago.",
+     x:"Small admission. The walk out along the water is half the point.",
+     c:"43.1712,16.4451"}
+  ],
+  eat:[
+    {n:"Konoba Menego", t:"Konoba", d:"Up the steps behind the square. Stone, candles, cured meats and island cheese. No fuss and no pasta."},
+    {n:"Dalmatino", t:"Sit-down", d:"Small, loud, extremely popular. Reserve days ahead or do not bother."},
+    {n:"Giaxa", t:"Fine", d:"In a 15th-century palace. The formal option on the island."},
+    {n:"Fig Café", t:"Casual", d:"Breakfast and light lunch, run by expats, reliably good coffee."}
+  ],
+  buy:[
+    {n:"Agave lace", d:"From the Benedictine convent only. Anything sold on the riva as Hvar lace is not this."},
+    {n:"Lavender", d:"The island's signature crop. Oil and dried bundles from the market stalls; check for a Hvar producer, since much sold here is imported."},
+    {n:"Island wine", d:"Plavac Mali from the southern slopes at Sveta Nedjelja. Zlatan Otok and Tomić are the names to look for."}
+  ],
+  know:[
+    "Hvar town has a public-decency ordinance with real fines — no swimwear off the beach, no bare chests in the streets.",
+    "The lavender harvest is over by September; what is sold is last season's, which is fine, but do not pay a premium for fresh.",
+    "Pakleni islands taxi boats run continuously from the riva, ten to twenty minutes each way. Feasible only on a long port day.",
+    "The town is small enough to see fully in four hours. Anything longer is beach or boat time.",
+    "Confirm the last tender before you climb anything."
+  ]
+},
+{
+  id:"zadar", name:"Zadar", sub:"Croatia · Gaženica terminal",
+  aboard:"20:30", ashore:"09:00",
+  dock:{t:"Gaženica — about 3.5 km south of the peninsula",
+        d:"Shuttle bus or taxi, 10 min. Some smaller ships berth on the city quay at Liburnska obala, which puts you at the Land Gate on foot."},
+  stops:[
+    {n:"Roman Forum", dur:25, leg:2,
+     w:"Laid out under Augustus and still the floor of the old town — column drums, paving and inscriptions lying where the earthquakes and the 1944 bombing left them.",
+     l:"The single standing pillar, used through the Middle Ages as a pillar of shame with the chain still fixed to it.",
+     x:"Open ground, free, always accessible.",
+     c:"44.1156,15.2244"},
+    {n:"Church of St Donatus", dur:30, leg:2,
+     w:"A 9th-century Byzantine rotunda built directly on the forum, using Roman columns and altar stones as its own foundations.",
+     l:"Look at the base of the walls — you can read the recycled Roman masonry, upside-down inscriptions and all. It is now a concert hall; the acoustics are the reason.",
+     x:"Small admission.",
+     c:"44.1157,15.2240"},
+    {n:"Cathedral of St Anastasia bell tower", dur:35, leg:6,
+     w:"The largest cathedral in Dalmatia, Romanesque, with a tower finished in the 19th century to an English architect's design.",
+     l:"From the top: the whole peninsula, the channel, and the Velebit mountains behind the mainland.",
+     x:"A hard narrow climb. Small fee, cash preferred.",
+     c:"44.1159,15.2237"},
+    {n:"Five Wells Square & Land Gate", dur:25, leg:9,
+     w:"The Venetians cut a cistern under the square in 1574 to hold water through an Ottoman siege. The Land Gate of 1543 is Sanmicheli's, and the finest Renaissance gate on this coast.",
+     l:"On the gate, the winged lion above and St Chrysogonus on horseback below — city patron and imperial power stacked in one arch.",
+     x:"",
+     c:"44.1142,15.2270"},
+    {n:"Kalelarga", dur:20, leg:8,
+     w:"Široka ulica, the wide street, older than the city's name for it. Zadar's saying is that Kalelarga is as old as Zadar and Zadar is as old as time.",
+     l:"Maraschino in the shop windows — the cherry liqueur was industrialised here by Luxardo in 1821.",
+     x:"",
+     c:"44.1152,15.2255"},
+    {n:"Sea Organ & Greeting to the Sun", dur:60, leg:0,
+     w:"Nikola Bašić cut thirty-five polyethylene pipes into the marble steps so the swell plays them. Next to it, a glass disc gathers sun all day and performs at dark.",
+     l:"Sit low on the steps with your back to the town. The organ is loudest and strangest when a ferry wake arrives.",
+     x:"THE reason to hold the ship until dark. Sunset over the Ugljan channel is the one Hitchcock claimed was the best in the world.",
+     c:"44.1194,15.2223"}
+  ],
+  eat:[
+    {n:"Pet Bunara", t:"Sit-down", d:"By Five Wells Square. Modern Dalmatian, seasonal, the best cooking on the peninsula."},
+    {n:"Konoba Skoblar", t:"Konoba", d:"On the market square. Grilled fish by the kilo, priced honestly."},
+    {n:"Bruschetta", t:"Waterfront", d:"On the quay facing the channel. Reserve a terrace table for sunset."},
+    {n:"Kavana Danica", t:"Café", d:"Old-school coffee and cake on Kalelarga. Do as the locals do and take an hour over it."}
+  ],
+  buy:[
+    {n:"Maraschino", d:"Luxardo and Maraska both trace to Zadar. The traditional straw-wrapped bottle is the one worth carrying."},
+    {n:"Nin salt", d:"Hand-harvested from the pans just north of the city, still by rake and wooden tools."},
+    {n:"Pag cheese", d:"From the island up the coast, sheep grazing on salt-blown herbs. Vacuum-sealed wheels travel well."}
+  ],
+  know:[
+    "The sunset here is the whole point of a late all-aboard. If the ship leaves before dark you are missing the headline act.",
+    "Zadar is a working city, not a museum town — prices are noticeably lower than Dubrovnik.",
+    "The Museum of Ancient Glass has Roman glass excavated locally and is unexpectedly excellent, and quiet.",
+    "The market by Skoblar is at its best before 11:00.",
+    "Free public water fountains near the Forum."
+  ]
+},
+{
+  id:"piran", name:"Piran", sub:"Slovenia · tender or Koper transfer",
+  aboard:"17:00", ashore:"09:30",
+  dock:{t:"Small ships tender to Piran; larger ships dock at Koper",
+        d:"From Koper it is about 30 min by road, or a seasonal passenger boat. Piran's centre is car-free — everything is on foot from the harbour."},
+  stops:[
+    {n:"Tartini Square", dur:20, leg:4,
+     w:"An oval of white stone that was the inner harbour until 1894, when the town filled it in because it had become a health hazard. The shape is the old basin.",
+     l:"The dark stone ring set into the paving marks the exact line of the vanished quay.",
+     x:"",
+     c:"45.5281,13.5686"},
+    {n:"Venetian House", dur:10, leg:3,
+     w:"Red-fronted, 1450s, the oldest house on the square. A Venetian merchant built it for a local girl and answered the gossip with an inscription.",
+     l:"Above the corner window: Lassa pur dir — let them talk.",
+     x:"",
+     c:"45.5283,13.5688"},
+    {n:"St George's Church & campanile", dur:45, leg:6,
+     w:"On the ridge above the town, with a bell tower built in 1608 as a smaller copy of the campanile in San Marco — the Venetians made no secret of who ran this coast.",
+     l:"The wooden staircase inside the tower is steep and open. The reward is the whole gulf, Trieste one way and Croatia the other.",
+     x:"Small fee for the tower, cash. Baptistery and lapidary next door.",
+     c:"45.5289,13.5679"},
+    {n:"Town walls", dur:35, leg:12,
+     w:"Seven towers of the 15th-century landward defences survive on the hill behind the church, and you can walk the ramparts.",
+     l:"The single best view in Slovenia: the terracotta roofs funnelling to a point of land in a blue gulf.",
+     x:"Very small fee. The path up from the church is steep and rough underfoot.",
+     c:"45.5294,13.5686"},
+    {n:"Punta lighthouse & the point", dur:25, leg:7,
+     w:"The tip of the peninsula, where a round Venetian lighthouse is grafted onto the church of St Clement.",
+     l:"Locals swimming off the flat concrete on the north side, into water that is properly deep immediately.",
+     x:"The seafront promenade back to the square is the prettiest stretch in town.",
+     c:"45.5296,13.5652"},
+    {n:"Maritime Museum Sergej Mašera", dur:40, leg:0,
+     w:"In a palace on the harbour. Salt, shipping and antiquity — including a serious room on the salt pans that made Piran rich.",
+     l:"The model of the salt fields and the wooden tools; the method has not changed since the 14th century.",
+     x:"Closed Mondays.",
+     c:"45.5274,13.5697"}
+  ],
+  eat:[
+    {n:"Pri Mari", t:"Sit-down", d:"Slovenian-Italian, run by a couple who cook what the boats brought. Reserve — it is small and locals fill it."},
+    {n:"Fritolin pri Cantini", t:"Fast", d:"Order at the hatch, eat at a bench on the square. Fried calamari and a paper cone of small fish."},
+    {n:"Cantina Klet", t:"Wine bar", d:"On Trg 1. Maja. Wine from the barrel in plastic cups, cheese and prosciutto plates, no pretension whatever."},
+    {n:"Ivo", t:"Waterfront", d:"On the promenade toward the point. Straightforward grilled fish with a sea table."}
+  ],
+  buy:[
+    {n:"Piran salt & fleur de sel", d:"Hand-raked at Sečovlje on a microbial mat that has been maintained for seven hundred years. Flor de sal is the top grade — buy it from Piranske Soline, the producer's own shop."},
+    {n:"Salt-pan cosmetics", d:"Brine mud and salt-flower creams from the same pans. Sold at the Lepa Vida shop."},
+    {n:"Istrian olive oil", d:"Slovenian Istria's oils win international medals and are barely exported. Look for a harvest date on the bottle."}
+  ],
+  know:[
+    "Slovenia uses the euro and is in Schengen — no border formality from Italy, but there is one from Croatia.",
+    "The old town is entirely pedestrian and mostly stairs. Wear real shoes.",
+    "Sečovlje salt pans nature park is 20 min south and worth a half day if the port call is long — check whether harvesting is still running in September.",
+    "Slovene is the language, but Italian is co-official on this coast and widely spoken.",
+    "Piran is compact — three or four hours covers it comfortably, which makes it the easiest port on this itinerary."
+  ]
+}
+];
+
+/* ============================================================
+   STATE — localStorage where available, memory otherwise.
+   ============================================================ */
+const mem = {};
+const store = {
+  get(k){ try{ const v = localStorage.getItem(k); return v===null?mem[k]:v; }catch(e){ return mem[k]; } },
+  set(k,v){ mem[k]=v; try{ localStorage.setItem(k,v); }catch(e){} },
+  del(k){ delete mem[k]; try{ localStorage.removeItem(k); }catch(e){} }
+};
+
+let cur = store.get("sb.port") || PORTS[0].id;
+let tab = "walk";
+const port = () => PORTS.find(p => p.id === cur);
+const doneKey = id => "sb.done." + id;
+const getDone = () => { try{ return JSON.parse(store.get(doneKey(cur)) || "[]"); }catch(e){ return []; } };
+const setDone = a => store.set(doneKey(cur), JSON.stringify(a));
+const timeKey = (id,which) => "sb." + which + "." + id;
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const hhmm = m => { const h = Math.floor(m/60), r = Math.round(m%60);
+  return h ? h + "h " + String(r).padStart(2,"0") + "m" : r + "m"; };
+
+function minsToday(t){ if(!t) return null; const [h,m] = t.split(":").map(Number); return h*60+m; }
+function nowMins(){ const d = new Date(); return d.getHours()*60 + d.getMinutes(); }
+function clockFromMins(m){ m = ((m % 1440) + 1440) % 1440;
+  return String(Math.floor(m/60)).padStart(2,"0") + ":" + String(m%60).padStart(2,"0"); }
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+function renderPortRail(){
+  $("#portRail").innerHTML = PORTS.map(p =>
+    '<button class="port-btn" role="tab" data-port="' + p.id + '" aria-selected="' +
+    (p.id===cur) + '">' + esc(p.name) + '</button>').join("");
+}
+
+function renderHead(){
+  const p = port();
+  $("#portName").textContent = p.name;
+  $("#portSub").textContent = p.sub;
+  $("#dock").innerHTML = "<b>" + esc(p.dock.t) + "</b><span>" + esc(p.dock.d) + "</span>";
+  $("#ashore").value = store.get(timeKey(cur,"ashore")) || p.ashore;
+  $("#allAboard").value = store.get(timeKey(cur,"aboard")) || p.aboard;
+}
+
+function renderTide(){
+  const a = minsToday($("#ashore").value), b = minsToday($("#allAboard").value);
+  const n = nowMins(), clock = $("#tideClock"), fill = $("#tideFill");
+  if(a===null || b===null || b<=a){ clock.textContent = "—"; fill.style.width = "0%"; return; }
+  const left = b - n;
+  const onShoreDay = n >= a && n <= b;
+  if(onShoreDay){
+    clock.textContent = hhmm(left);
+    clock.classList.toggle("warn", left <= 60);
+    fill.style.width = Math.min(100, Math.max(0, ((n-a)/(b-a))*100)) + "%";
+  } else {
+    clock.textContent = hhmm(b-a);
+    clock.classList.remove("warn");
+    fill.style.width = "0%";
+  }
+}
+
+function renderWalk(){
+  const p = port(), done = getDone();
+  let out = "";
+
+  // projection from first unchecked stop
+  const first = p.stops.findIndex((s,i) => !done.includes(i));
+  const b = minsToday($("#allAboard").value);
+  if(first > -1 && b !== null){
+    let need = 0;
+    for(let i=first;i<p.stops.length;i++){ if(done.includes(i)) continue;
+      need += p.stops[i].dur + (i < p.stops.length-1 ? p.stops[i].leg : 0); }
+    const finish = nowMins() + need;
+    const slack = b - finish;
+    out += '<div class="proj' + (slack < 30 ? " tight" : "") + '"><b>If you start now</b>' +
+      'Remaining stops need <strong>' + hhmm(need) + '</strong> — finishing around <strong>' +
+      clockFromMins(finish) + '</strong>. ' +
+      (slack >= 0
+        ? 'That leaves ' + hhmm(slack) + ' before all aboard.'
+        : '<strong>That is ' + hhmm(-slack) + ' past all aboard. Cut something.</strong>') +
+      '</div>';
+  }
+
+  out += '<ol class="rail">' + p.stops.map((s,i) => {
+    const isDone = done.includes(i);
+    return '<li class="stop' + (isDone?" done":"") + '" data-i="' + i + '">' +
+      '<button class="dot" data-check="' + i + '" aria-label="Mark ' + esc(s.n) + ' done">' +
+        (isDone ? "&#10003;" : (i+1)) + '</button>' +
+      '<div class="stop-head" data-open="' + i + '">' +
+        '<span class="stop-name">' + esc(s.n) + '</span>' +
+        '<span class="stop-dur">' + s.dur + ' min</span>' +
+      '</div>' +
+      '<div class="stop-body">' +
+        '<p>' + esc(s.w) + '</p>' +
+        (s.l ? '<div class="look"><b>Look for</b>' + esc(s.l) + '</div>' : '') +
+        (s.x ? '<p style="margin-top:8px;color:var(--mute);font-size:13.5px">' + esc(s.x) + '</p>' : '') +
+        '<a class="geo" href="https://maps.apple.com/?ll=' + s.c + '&q=' + encodeURIComponent(s.n) +
+          '">' + s.c + ' · open in Maps</a>' +
+        (i < p.stops.length-1 ? '<div class="leg">&darr; ' + s.leg + ' min walk to ' +
+          esc(p.stops[i+1].n) + '</div>' : '') +
+      '</div></li>';
+  }).join("") + '</ol>';
+
+  return out;
+}
+
+function renderList(items, tagKey){
+  return items.map(x =>
+    '<div class="entry"><div class="entry-head"><span class="entry-name">' + esc(x.n) + '</span>' +
+    (x.t ? '<span class="entry-tag">' + esc(x.t) + '</span>' : '') +
+    '</div><p>' + esc(x.d) + '</p></div>').join("");
+}
+
+function renderPanel(){
+  const p = port();
+  if(tab === "walk") $("#panel").innerHTML = renderWalk();
+  else if(tab === "eat") $("#panel").innerHTML = renderList(p.eat);
+  else if(tab === "buy") $("#panel").innerHTML = renderList(p.buy);
+  else $("#panel").innerHTML = '<ul class="know">' +
+    p.know.map(k => "<li>" + esc(k) + "</li>").join("") + "</ul>";
+}
+
+function renderAll(){
+  renderPortRail(); renderHead(); renderTide(); renderPanel();
+  document.querySelectorAll(".tab").forEach(t =>
+    t.setAttribute("aria-selected", t.dataset.tab === tab));
+}
+
+/* ============================================================
+   EVENTS
+   ============================================================ */
+document.addEventListener("click", e => {
+  const pb = e.target.closest("[data-port]");
+  if(pb){ cur = pb.dataset.port; store.set("sb.port", cur); renderAll(); window.scrollTo(0,0); return; }
+
+  const tb = e.target.closest(".tab");
+  if(tb){ tab = tb.dataset.tab; renderAll(); return; }
+
+  const chk = e.target.closest("[data-check]");
+  if(chk){
+    const i = +chk.dataset.check, d = getDone();
+    const k = d.indexOf(i); k > -1 ? d.splice(k,1) : d.push(i);
+    setDone(d); renderPanel(); return;
+  }
+
+  const op = e.target.closest("[data-open]");
+  if(op){ op.parentElement.classList.toggle("open"); return; }
+});
+
+$("#ashore").addEventListener("change", e => {
+  store.set(timeKey(cur,"ashore"), e.target.value); renderTide(); renderPanel(); });
+$("#allAboard").addEventListener("change", e => {
+  store.set(timeKey(cur,"aboard"), e.target.value); renderTide(); renderPanel(); });
+$("#reset").addEventListener("click", () => { setDone([]); renderPanel(); });
+
+const d = new Date();
+$("#today").textContent = d.toLocaleDateString("en-GB",
+  {weekday:"short", day:"numeric", month:"short"});
+
+renderAll();
+setInterval(() => { renderTide(); if(tab==="walk") renderPanel(); }, 60000);
+</script>
+</body>
+</html>
