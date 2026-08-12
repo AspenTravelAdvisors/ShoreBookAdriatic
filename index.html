@@ -218,9 +218,23 @@ h1{
 .attrib{position:absolute;right:0;bottom:0;background:rgba(251,250,246,.86);
   font-family:var(--mono);font-size:8.5px;letter-spacing:.02em;color:var(--mute);padding:2px 5px}
 .attrib a{color:var(--sea)}
-.zoomctl{position:absolute;left:8px;top:8px;display:flex;flex-direction:column;gap:5px}
-.zoomctl button{width:32px;height:32px;padding:0;border:1px solid var(--ink);
-  background:rgba(251,250,246,.93);color:var(--ink);font:17px/1 var(--mono);cursor:pointer}
+.zoomctl,.fsctl{position:absolute;top:8px;display:flex;flex-direction:column;gap:5px}
+.zoomctl{left:8px}
+.fsctl{right:8px}
+.zoomctl button,.fsctl button{width:32px;height:32px;padding:0;border:1px solid var(--ink);
+  background:rgba(251,250,246,.93);color:var(--ink);font:17px/1 var(--mono);cursor:pointer;
+  display:flex;align-items:center;justify-content:center}
+.fsctl svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.7;
+  stroke-linecap:square;pointer-events:none}
+
+/* full screen — native where the browser allows it, a fixed overlay everywhere else
+   (iPhone Safari still refuses requestFullscreen on anything but a video) */
+.viewbox.map.fs{position:fixed;inset:0;z-index:80;width:100%;height:100%;margin:0;border:0}
+.viewbox.map.fs .zoomctl,.viewbox.map.fs .fsctl{top:calc(8px + env(safe-area-inset-top))}
+.viewbox.map.fs .zoomctl{left:calc(8px + env(safe-area-inset-left))}
+.viewbox.map.fs .fsctl{right:calc(8px + env(safe-area-inset-right))}
+.viewbox.map.fs .attrib{bottom:env(safe-area-inset-bottom)}
+body.fsmap{overflow:hidden}
 
 /* ---------- locator bar ---------- */
 .locbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 10px}
@@ -1067,6 +1081,7 @@ const VB = {w:380, l:24, r:12, t:12, b:24};   /* height is set per chart, from t
 let mode = (store.get("sb.mode") === "map") ? "map" : "chart";
 let mapView = null;                 /* {lat, lon, z} — rebuilt per port */
 let followMe = false;
+let mapFull = false;                /* map blown up to the whole screen */
 let proj = null;                    /* {toXY, W, H, mPerUnit, svg} for whichever view is up */
 let tiles = new Map();              /* live tile <img> elements, keyed z/x/y */
 
@@ -1121,7 +1136,8 @@ function chartShell(){
   '</div>';
 
   html += '<div class="locbar" id="locbar"></div>';
-  html += '<div class="viewbox ' + mode + '" id="viewbox"></div>';
+  html += '<div class="viewbox ' + mode + (mode==="map" && mapFull ? ' fs' : '') +
+          '" id="viewbox"></div>';
   html += '<div id="chartCard"></div>';
 
   html += '<div class="index"><h3>Index</h3>' + (s.shown.length
@@ -1433,9 +1449,12 @@ function drawMap(){
       '<div class="zoomctl">' +
         '<button data-zoom="1" aria-label="Zoom in">+</button>' +
         '<button data-zoom="-1" aria-label="Zoom out">&minus;</button></div>' +
+      '<div class="fsctl"><button data-fullmap="1"></button></div>' +
       '<div class="attrib">&copy; <a href="https://www.openstreetmap.org/copyright" ' +
         'target="_blank" rel="noopener">OpenStreetMap</a> contributors</div>';
+    paintFullBtn();
     bindMapGestures(host);
+    watchMapSize(host);
   }
   const W = host.clientWidth, H = host.clientHeight;
   if(!W || !H) return;
@@ -1525,7 +1544,7 @@ function bindMapGestures(host){
     raf = requestAnimationFrame(() => { raf = 0; drawMap(); paintMe(); }); };
 
   host.addEventListener("pointerdown", e => {
-    if(e.target.closest("[data-zoom],[data-pin],.attrib")) return;
+    if(e.target.closest("[data-zoom],[data-fullmap],[data-pin],.attrib")) return;
     host.setPointerCapture(e.pointerId);
     pts.set(e.pointerId, {x:e.clientX, y:e.clientY});
     if(pts.size === 1) last = {x:e.clientX, y:e.clientY};
@@ -1577,6 +1596,80 @@ function bindMapGestures(host){
     redraw();
   }, {passive:false});
 }
+
+/* The box changes size on full screen, on rotation and on a window drag,
+   and only some of those raise a window resize. Watch the box itself. */
+function watchMapSize(host){
+  if(typeof ResizeObserver !== "function") return;
+  let last = "", raf = 0;
+  new ResizeObserver(() => {
+    if(raf) return;
+    raf = requestAnimationFrame(() => {
+      raf = 0;
+      const k = host.clientWidth + "x" + host.clientHeight;
+      if(k === last || !host.clientWidth || !host.isConnected) return;
+      last = k; drawMap(); paintMe();
+    });
+  }).observe(host);
+}
+
+/* ============================================================
+   Full screen — the whole phone for the map. Native fullscreen
+   where it exists, a fixed overlay where it does not.
+   ============================================================ */
+const FS_ICON = {
+  in:  '<svg viewBox="0 0 20 20" aria-hidden="true">' +
+       '<path d="M8 2H2v6M12 2h6v6M8 18H2v-6M12 18h6v-6"/></svg>',
+  out: '<svg viewBox="0 0 20 20" aria-hidden="true">' +
+       '<path d="M2 7h5V2M18 7h-5V2M2 13h5v5M18 13h-5v5"/></svg>'
+};
+
+function paintFullBtn(){
+  const b = document.querySelector("[data-fullmap]"); if(!b) return;
+  b.innerHTML = mapFull ? FS_ICON.out : FS_ICON.in;
+  b.setAttribute("aria-label", mapFull ? "Leave full screen" : "Full screen map");
+  b.setAttribute("aria-pressed", mapFull);
+  b.title = mapFull ? "Leave full screen" : "Full screen map";
+}
+
+const fsElement = () => document.fullscreenElement || document.webkitFullscreenElement || null;
+
+function enterMapFull(){
+  const host = $("#viewbox"); if(!host || mode !== "map" || mapFull) return;
+  mapFull = true;
+  host.classList.add("fs");
+  document.body.classList.add("fsmap");
+  const req = host.requestFullscreen || host.webkitRequestFullscreen;
+  if(req){ try{ Promise.resolve(req.call(host)).catch(() => {}); }catch(e){} }
+  paintFullBtn();
+  requestAnimationFrame(() => { drawMap(); paintMe(); });
+}
+
+function exitMapFull(){
+  if(!mapFull) return;
+  mapFull = false;
+  const host = $("#viewbox");
+  if(host) host.classList.remove("fs");
+  document.body.classList.remove("fsmap");
+  if(fsElement()){
+    const off = document.exitFullscreen || document.webkitExitFullscreen;
+    if(off){ try{ Promise.resolve(off.call(document)).catch(() => {}); }catch(e){} }
+  }
+  paintFullBtn();
+  requestAnimationFrame(() => {
+    if(tab === "chart" && mode === "map"){ drawMap(); paintMe(); }
+  });
+}
+
+/* the browser can drop out of fullscreen on its own — Esc, a swipe, a navigation */
+["fullscreenchange","webkitfullscreenchange"].forEach(ev =>
+  document.addEventListener(ev, () => { if(!fsElement()) exitMapFull(); }));
+
+/* Esc gets us out either way — the browser handles native fullscreen itself,
+   the overlay has nobody else to do it */
+document.addEventListener("keydown", e => {
+  if(e.key === "Escape" && mapFull) exitMapFull();
+});
 
 function zoomAt(z, sx, sy, host){
   const W = host.clientWidth, H = host.clientHeight;
@@ -1650,14 +1743,15 @@ function renderAll(){
    ============================================================ */
 document.addEventListener("click", e => {
   const pb = e.target.closest("[data-port]");
-  if(pb){ cur = pb.dataset.port; sel = null; mapView = null; followMe = false;
+  if(pb){ exitMapFull(); cur = pb.dataset.port; sel = null; mapView = null; followMe = false;
     store.set("sb.port", cur); renderAll(); window.scrollTo(0,0); return; }
 
   const tb = e.target.closest(".tab");
-  if(tb){ tab = tb.dataset.tab; renderAll(); return; }
+  if(tb){ exitMapFull(); tab = tb.dataset.tab; renderAll(); return; }
 
   const md = e.target.closest("[data-setmode]");
   if(md){ if(md.dataset.setmode === mode) return;
+    exitMapFull();
     mode = md.dataset.setmode; store.set("sb.mode", mode);
     renderPanel(); return; }
 
@@ -1671,6 +1765,9 @@ document.addEventListener("click", e => {
 
   const fp = e.target.closest("[data-fitport]");
   if(fp){ fitPort(); drawMap(); paintMe(); paintLocBar(); return; }
+
+  const fs = e.target.closest("[data-fullmap]");
+  if(fs){ mapFull ? exitMapFull() : enterMapFull(); return; }
 
   const zm = e.target.closest("[data-zoom]");
   if(zm){ const host = $("#viewbox");
