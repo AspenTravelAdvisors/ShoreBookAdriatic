@@ -8,6 +8,8 @@
 <meta name="apple-mobile-web-app-title" content="Shore Book">
 <meta name="theme-color" content="#EDEAE1">
 <title>Shore Book · Adriatic 2026</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
 :root{
   --stone:#EDEAE1;
@@ -713,6 +715,13 @@ $("#today").textContent = d.toLocaleDateString("en-GB",
 
 renderAll();
 setInterval(() => { renderTide(); if(tab==="walk") renderPanel(); }, 60000);
+
+/* Offline: cache the app on first load so it runs with no signal. */
+if("serviceWorker" in navigator){
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  });
+}
 </script>
 </body>
 </html>
