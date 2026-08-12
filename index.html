@@ -193,9 +193,47 @@ h1{
 .sw.k-eat{background:var(--rosso)}
 .sw.k-buy{background:var(--sea);transform:rotate(45deg)}
 .sw.k-screen{background:var(--reel);border-radius:50%}
-.chart-frame{border:1px solid var(--ink);background:var(--sand);padding:8px;margin:0 0 12px}
-.chart-frame svg{display:block;width:100%;height:auto;max-height:70vh;margin:0 auto}
+.seg{display:inline-flex}
+.lay.wide{border-color:var(--ink);color:var(--ink)}
+.seg .lay+.lay{border-left-width:0}
+.lay.wide[aria-pressed="true"]{background:var(--ink);color:var(--stone)}
+
+/* ---------- the view: drawn chart or real map ---------- */
+.viewbox{position:relative;margin:0 0 12px;border:1px solid var(--ink);background:var(--sand)}
+.viewbox.chart{padding:8px}
+.viewbox.chart svg{display:block;width:100%;height:auto;max-height:70vh;margin:0 auto}
+.viewbox.map{height:min(62vh,470px);overflow:hidden;touch-action:none;background:#E4E0D6;
+  cursor:grab}
+.viewbox.map:active{cursor:grabbing}
 .chart-empty{font-family:var(--mono);font-size:11px;color:var(--mute);text-align:center;padding:40px 0}
+.tiles{position:absolute;inset:0;filter:saturate(.68) contrast(.97)}
+.tiles img{position:absolute;display:block;max-width:none;user-select:none;
+  -webkit-user-drag:none;pointer-events:none}
+.tiles img.dead{display:none}
+.ovl{position:absolute;inset:0;width:100%;height:100%}
+.ovl .pin circle,.ovl .pin rect{stroke:#FBFAF6;stroke-width:1.2}
+.ovl .pin .halo{fill:#FBFAF6;fill-opacity:.7;stroke:#131E28;stroke-width:1.4}
+.ovl .route{stroke:#131E28;stroke-width:1.6;opacity:.8;
+  filter:drop-shadow(0 0 1.5px rgba(251,250,246,.95))}
+.attrib{position:absolute;right:0;bottom:0;background:rgba(251,250,246,.86);
+  font-family:var(--mono);font-size:8.5px;letter-spacing:.02em;color:var(--mute);padding:2px 5px}
+.attrib a{color:var(--sea)}
+.zoomctl{position:absolute;left:8px;top:8px;display:flex;flex-direction:column;gap:5px}
+.zoomctl button{width:32px;height:32px;padding:0;border:1px solid var(--ink);
+  background:rgba(251,250,246,.93);color:var(--ink);font:17px/1 var(--mono);cursor:pointer}
+
+/* ---------- locator bar ---------- */
+.locbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 10px}
+.locnote{font-family:var(--mono);font-size:10px;letter-spacing:.05em;color:var(--mute);
+  flex:1;min-width:0}
+.locnote strong{color:var(--sea);font-weight:400}
+.locnote.warn{color:var(--rosso)}
+.fromhere{font-family:var(--mono);font-size:10.5px;color:var(--sea)}
+#me{pointer-events:none}   /* never let the blue dot swallow a tap on a pin */
+.me-acc{fill:#1D5A6E;fill-opacity:.13;stroke:#1D5A6E;stroke-width:.6;stroke-opacity:.45}
+.me-dot{fill:#1D5A6E;stroke:#FBFAF6;stroke-width:2}
+.me-arrow{fill:#1D5A6E}
+.me-lbl{font-family:Menlo,monospace;font-size:8px;fill:#1D5A6E;letter-spacing:.04em}
 .off{border-top:1px solid var(--rule);margin-top:16px;padding-top:12px}
 .off h3,.index h3{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
   color:var(--mute);font-weight:400;margin:0 0 8px}
@@ -225,7 +263,8 @@ h1{
 .pin{cursor:pointer}
 .pin text{font-family:Menlo,monospace;font-size:9px;fill:#FBFAF6}
 .pin:focus-visible{outline:none}
-.pin:focus-visible .halo,.halo{fill:none;stroke:#131E28;stroke-width:1.2}
+.pin .halo{fill:none;stroke:#131E28;stroke-width:1.2;visibility:hidden}
+.pin.on .halo,.pin:focus-visible .halo{visibility:visible}
 .bar line{stroke:#131E28;stroke-width:1}
 .rose line{stroke:#131E28;stroke-width:.8}
 .rose polygon{fill:#131E28}
@@ -959,8 +998,10 @@ function card(o){
     (o.x ? '<p class="note">' + esc(o.x) + '</p>' : '') +
     '<div class="card-foot">' +
       (L ? '<span class="coord">' + esc(o.c) + '</span>' +
+           (geo.fix ? '<span class="fromhere">' + dist(kmBetween(geo.fix, L)) + ' ' +
+                      compass(geo.fix, L) + ' of you</span>' : '') +
            '<a href="' + mapsHref(o.c, o.n) + '">Open in Maps</a>' +
-           '<button data-goto="' + k + '">Show on chart</button>'
+           '<button data-goto="' + k + '">Show on map</button>'
          : '<span class="coord">No pin — nothing was filmed here</span>') +
     '</div></article>';
 }
@@ -973,44 +1014,269 @@ function renderCards(kind, note){
 }
 
 /* ============================================================
-   RENDER — chart (inline SVG, no tiles, no network)
+   WHERE AM I — the phone's own GPS. Needs no signal, only sky.
+   ============================================================ */
+const geo = {on:false, fix:null, err:null, id:null};
+
+function startGeo(){
+  if(!("geolocation" in navigator)){ geo.err = "This browser has no location service."; onFix(); return; }
+  if(!window.isSecureContext){ geo.err = "Location needs a secure (https) page."; onFix(); return; }
+  geo.on = true; geo.err = null; store.set("sb.geo","1");
+  try{
+    geo.id = navigator.geolocation.watchPosition(
+      p => { geo.fix = {lat:p.coords.latitude, lon:p.coords.longitude,
+                        acc:p.coords.accuracy || 0, t:p.timestamp};
+             geo.err = null; onFix(); },
+      e => { geo.err = e.code === 1
+               ? "Location refused. Allow it for this site in your browser settings."
+               : e.code === 2
+               ? "No fix yet. GPS wants a view of the sky; stone alleys are slow."
+               : "Location timed out. Try again in the open.";
+             onFix(); },
+      {enableHighAccuracy:true, maximumAge:4000, timeout:25000});
+  }catch(e){ geo.on = false; geo.err = "Location unavailable."; onFix(); }
+}
+function stopGeo(){
+  try{ if(geo.id != null) navigator.geolocation.clearWatch(geo.id); }catch(e){}
+  geo.id = null; geo.on = false; geo.fix = null; geo.err = null;
+  store.del("sb.geo"); onFix();
+}
+function onFix(){
+  if(tab !== "chart") return;
+  paintLocBar();
+  if(mode === "map" && geo.fix && followMe) centreOn(geo.fix.lat, geo.fix.lon);
+  else paintMe();
+}
+function nearestTo(fix){
+  let best = null;
+  plotted(port()).forEach(o => {
+    if(!layers[o.k]) return;
+    const L = ll(o.c), d = kmBetween(fix, L);
+    if(!best || d < best.km) best = {o, L, km:d};
+  });
+  return best;
+}
+
+/* ============================================================
+   RENDER — the view. Two of them:
+     chart  a drawn plot from the coordinates. No network, ever.
+     map    real OpenStreetMap tiles, when there is a signal.
+   Both carry the same pins and both show your own position.
    ============================================================ */
 const VB = {w:380, l:24, r:12, t:12, b:24};   /* height is set per chart, from the ground */
+let mode = (store.get("sb.mode") === "map") ? "map" : "chart";
+let mapView = null;                 /* {lat, lon, z} — rebuilt per port */
+let followMe = false;
+let proj = null;                    /* {toXY, W, H, mPerUnit, svg} for whichever view is up */
+let tiles = new Map();              /* live tile <img> elements, keyed z/x/y */
+
+const TILE_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+const MINZ = 11, MAXZ = 19;
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+
+/* --- Web Mercator, the projection the tiles are cut on ------- */
+const mercY = lat => Math.log(Math.tan(Math.PI/4 + clamp(lat,-85,85)*RAD/2));
+function worldPx(lat, lon, z){
+  const s = 256*Math.pow(2, z);
+  return {x:(lon+180)/360*s, y:(0.5 - mercY(lat)/(2*Math.PI))*s};
+}
+function pxToLL(x, y, z){
+  const s = 256*Math.pow(2, z);
+  return {lon: x/s*360 - 180,
+          lat: (2*Math.atan(Math.exp((0.5 - y/s)*2*Math.PI)) - Math.PI/2)/RAD};
+}
+const mPerPx = (lat, z) => 156543.03392*Math.cos(lat*RAD)/Math.pow(2, z);
+
+/* --- the working set ---------------------------------------- */
+function chartSets(){
+  const p = port(), centre = townCentre(p);
+  const all = plotted(p).map(o => Object.assign({}, o, {ll: ll(o.c)}));
+  const near = all.filter(o => kmBetween(centre, o.ll) <= TOWN_KM);
+  const far  = all.filter(o => kmBetween(centre, o.ll) >  TOWN_KM);
+  const pool = (mode === "map" || fitAll) ? all : near;
+  return {p, centre, all, near, far, shown: pool.filter(o => layers[o.k])};
+}
+
+/* ============================================================
+   The shell — toolbar, locator bar, view host, card, index
+   ============================================================ */
+function chartShell(){
+  const s = chartSets();
+  let html = '<div class="tools">' +
+    '<span class="seg">' +
+      '<button class="lay wide" data-setmode="chart" aria-pressed="' + (mode==="chart") +
+        '">Chart</button>' +
+      '<button class="lay wide" data-setmode="map" aria-pressed="' + (mode==="map") +
+        '">Map</button></span>' +
+    Object.keys(KIND).map(k => {
+      const n = s.all.filter(o => o.k===k).length;
+      return '<button class="lay" data-layer="' + k + '" aria-pressed="' + !!layers[k] + '">' +
+        '<span class="sw k-' + k + '"></span>' + esc(KIND[k].t) + ' ' + n + '</button>';
+    }).join("") +
+    (mode==="map"
+      ? '<button class="lay" data-fitport="1">Fit port</button>'
+      : '<button class="lay" data-fit="1" aria-pressed="' + fitAll + '">' +
+        (fitAll ? "Whole coast" : "Town only") + '</button>') +
+    '<button class="lay" data-gpx="1">Download .gpx</button>' +
+  '</div>';
+
+  html += '<div class="locbar" id="locbar"></div>';
+  html += '<div class="viewbox ' + mode + '" id="viewbox"></div>';
+  html += '<div id="chartCard"></div>';
+
+  html += '<div class="index"><h3>Index</h3>' + (s.shown.length
+    ? s.shown.map(o => {
+        const k = keyOf(o);
+        return '<button class="ixrow" data-pin="' + k + '" aria-current="' + (sel===k) + '">' +
+          glyph(o.k, o.num) + '<span class="ixname">' + esc(o.n) + '</span>' +
+          '<span class="ixsub">' + esc(KIND[o.k].t) + '</span></button>';
+      }).join("")
+    : '<p class="sec-note">Nothing plotted — switch a layer back on.</p>') +
+    '<p class="sec-note" style="margin-top:12px">Decimal degrees, WGS 84 — the same numbers your ' +
+    'phone reads. Stops and landmarks are surveyed to the door; kitchens, shops and film marks are ' +
+    'good to a block, which is all you need on foot.' +
+    (mode==="chart" ? ' Where two pins would collide on the chart the marker is nudged clear and a ' +
+      'hairline points back to the true position.' : '') + '</p></div>';
+
+  html += offList(s.far, s.centre);
+  return html;
+}
+
+function offList(far, centre){
+  if(mode === "map" || fitAll || !far.length) return "";
+  const rows = far.filter(o => layers[o.k]).sort((a,b) =>
+    kmBetween(centre,a.ll) - kmBetween(centre,b.ll));
+  if(!rows.length) return "";
+  return '<div class="off"><h3>Off the chart</h3>' + rows.map(o =>
+    '<div class="offrow">' + glyph(o.k, o.num) +
+      '<span class="oname">' + esc(o.n) +
+        '<span class="osub">' + esc(o.sub || "") + '</span></span>' +
+      '<span class="bearing">' + compass(centre, o.ll) + ' ' + dist(kmBetween(centre, o.ll)) + '</span>' +
+    '</div>').join("") +
+    '<p class="sec-note" style="margin-top:10px">Bearings and distances are from the middle of the ' +
+    'old town. Switch to <strong>whole coast</strong>, or to the map, to plot them.</p></div>';
+}
+
+function drawView(){
+  if(mode === "map") drawMap(); else drawChart();
+  paintMe(); paintSel(); paintLocBar();
+}
+
+/* ============================================================
+   Locator bar
+   ============================================================ */
+function paintLocBar(){
+  const bar = $("#locbar"); if(!bar) return;
+  let html;
+  if(!geo.on){
+    html = '<button class="lay" data-geo="on">Show where I am</button>' +
+      '<span class="locnote">The phone\'s own GPS. It works with no signal.</span>';
+  } else if(geo.err){
+    html = '<button class="lay" data-geo="off" aria-pressed="true">Location on</button>' +
+      '<span class="locnote warn">' + esc(geo.err) + '</span>';
+  } else if(!geo.fix){
+    html = '<button class="lay" data-geo="off" aria-pressed="true">Location on</button>' +
+      '<span class="locnote">Waiting for a fix…</span>';
+  } else {
+    const n = nearestTo(geo.fix);
+    html = '<button class="lay" data-geo="off" aria-pressed="true">Location on</button>' +
+      (mode === "map"
+        ? '<button class="lay" data-geo="follow" aria-pressed="' + followMe + '">Follow</button>'
+        : '') +
+      '<span class="locnote">&plusmn;' + Math.round(geo.fix.acc) + ' m' +
+        (n ? ' &middot; nearest ' + esc(n.o.n) + ' <strong>' + dist(n.km) + ' ' +
+             compass(geo.fix, n.L) + '</strong>' : '') + '</span>';
+  }
+  bar.innerHTML = html;
+}
+
+/* ============================================================
+   Your position, painted into whichever view is up
+   ============================================================ */
+function paintMe(){
+  if(!proj || !proj.svg || !proj.svg.isConnected) return;
+  const old = proj.svg.querySelector("#me"); if(old) old.remove();
+  if(!geo.on || !geo.fix) return;
+
+  const NS = "http://www.w3.org/2000/svg";
+  const g = document.createElementNS(NS, "g");
+  g.setAttribute("id","me");
+  const pt = proj.toXY(geo.fix.lat, geo.fix.lon);
+  const inside = pt.x >= 2 && pt.x <= proj.W-2 && pt.y >= 2 && pt.y <= proj.H-2;
+
+  if(inside){
+    const r = clamp(geo.fix.acc/proj.mPerUnit, 5, proj.W);
+    g.innerHTML =
+      '<circle class="me-acc" cx="' + pt.x.toFixed(1) + '" cy="' + pt.y.toFixed(1) +
+        '" r="' + r.toFixed(1) + '"/>' +
+      '<circle class="me-dot" cx="' + pt.x.toFixed(1) + '" cy="' + pt.y.toFixed(1) + '" r="5"/>';
+  } else {
+    /* off the edge — point at it, and say how far */
+    const cx = proj.W/2, cy = proj.H/2;
+    const dx = pt.x - cx, dy = pt.y - cy;
+    const m = Math.max(Math.abs(dx)/(proj.W/2 - 16), Math.abs(dy)/(proj.H/2 - 16), 1e-6);
+    const ex = cx + dx/m, ey = cy + dy/m;
+    const ang = Math.atan2(dy, dx)*180/Math.PI + 90;
+    const centre = townCentre(port());
+    g.innerHTML =
+      '<g transform="translate(' + ex.toFixed(1) + ',' + ey.toFixed(1) + ') rotate(' +
+        ang.toFixed(1) + ')"><polygon class="me-arrow" points="0,-10 6.5,6 -6.5,6"/></g>' +
+      '<text class="me-lbl" x="' + clamp(ex, 30, proj.W-30).toFixed(1) + '" y="' +
+        clamp(ey + (dy>0 ? -14 : 20), 12, proj.H-6).toFixed(1) +
+        '" text-anchor="middle">you &middot; ' +
+        esc(dist(kmBetween(centre, geo.fix)) + " " + compass(centre, geo.fix)) + '</text>';
+  }
+  proj.svg.appendChild(g);
+}
+
+/* ============================================================
+   Selection — patched in place so the map is not torn down
+   ============================================================ */
+function paintSel(){
+  const host = $("#chartCard");
+  if(host){
+    const o = chartSets().shown.find(x => keyOf(x) === sel);
+    host.innerHTML = o ? card(o) : "";
+  }
+  document.querySelectorAll(".ixrow").forEach(r =>
+    r.setAttribute("aria-current", r.dataset.pin === sel));
+  document.querySelectorAll("g[data-pin]").forEach(g =>
+    g.classList.toggle("on", g.dataset.pin === sel));
+}
+
+function selectPin(k, centreIt){
+  sel = (sel === k && !centreIt) ? null : k;
+  if(mode === "map"){
+    if(sel && centreIt){
+      const o = chartSets().all.find(x => keyOf(x) === sel);
+      if(o){ followMe = false; mapView.lat = o.ll.lat; mapView.lon = o.ll.lon;
+             mapView.z = Math.max(mapView.z, 17); drawMap(); paintMe(); }
+    } else drawOverlay();
+  } else { drawChart(); paintMe(); }
+  paintSel(); paintLocBar();
+}
+
+/* ============================================================
+   The drawn chart — no tiles, no network
+   ============================================================ */
 const GRID_STEPS = [0.5,0.2,0.1,0.05,0.02,0.01,0.005,0.002,0.001,0.0005];
 const BAR_STEPS  = [10,20,50,100,200,500,1000,2000,5000,10000,20000,50000];
-
 function niceStep(span){
   for(const s of GRID_STEPS){ const n = span/s; if(n >= 2 && n <= 6) return s; }
   return GRID_STEPS[GRID_STEPS.length-1];
 }
 
-function buildChart(){
-  const p = port();
-  const centre = townCentre(p);
-  const all = plotted(p).map(o => Object.assign({}, o, {ll: ll(o.c)}));
-  const near = all.filter(o => kmBetween(centre, o.ll) <= TOWN_KM);
-  const far  = all.filter(o => kmBetween(centre, o.ll) >  TOWN_KM);
-  const pool = fitAll ? all : near;
-  const shown = pool.filter(o => layers[o.k]);
-
-  /* --- toolbar ------------------------------------------------ */
-  let html = '<div class="tools">' +
-    Object.keys(KIND).map(k => {
-      const n = all.filter(o => o.k===k).length;
-      return '<button class="lay" data-layer="' + k + '" aria-pressed="' + !!layers[k] + '">' +
-        '<span class="sw k-' + k + '"></span>' + esc(KIND[k].t) + ' ' + n + '</button>';
-    }).join("") +
-    '<button class="lay" data-fit="1" aria-pressed="' + fitAll + '">' +
-      (fitAll ? "Whole coast" : "Town only") + '</button>' +
-    '<button class="lay" data-gpx="1">Download .gpx</button>' +
-  '</div>';
-
+function drawChart(){
+  const host = $("#viewbox"); if(!host) return;
+  tiles = new Map();
+  const {p, shown} = chartSets();
   if(!shown.length){
-    return html + '<div class="chart-frame"><div class="chart-empty">' +
-      'Nothing to plot — switch a layer back on.</div></div>' + offList(far, centre);
+    host.innerHTML = '<div class="chart-empty">Nothing to plot — switch a layer back on.</div>';
+    proj = null; return;
   }
 
-  /* --- projection: equirectangular, north up ------------------ */
+  /* equirectangular, north up */
+  const centre = townCentre(p);
   const kx = Math.cos(centre.lat * RAD);
   const px = o => o.ll.lon * kx, py = o => -o.ll.lat;
   let x0 = Math.min(...shown.map(px)), x1 = Math.max(...shown.map(px));
@@ -1030,20 +1296,18 @@ function buildChart(){
   const SX = v => VB.l + iw/2 + (v - cx)*scale;
   const SY = v => VB.t + ih/2 + (v - cy)*scale;
 
-  /* --- graticule ---------------------------------------------- */
-  const latStep = niceStep((y1-y0)), lonStep = niceStep((x1-x0)/kx);
+  /* graticule */
+  const latStep = niceStep(y1-y0), lonStep = niceStep((x1-x0)/kx);
   const dec = s => Math.max(0, Math.ceil(-Math.log10(s)));
   let grid = "", ticks = "";
-  const latLo = Math.ceil(-y1/latStep)*latStep, latHi = -y0;
-  for(let v=latLo; v<=latHi+1e-9; v+=latStep){
+  for(let v = Math.ceil(-y1/latStep)*latStep; v <= -y0+1e-9; v += latStep){
     const Y = SY(-v);
     grid += '<line x1="' + VB.l + '" y1="' + Y.toFixed(1) + '" x2="' + (VB.w-VB.r) +
             '" y2="' + Y.toFixed(1) + '"/>';
     ticks += '<text x="' + (VB.l-3) + '" y="' + (Y+3).toFixed(1) +
              '" text-anchor="end" class="tk">' + v.toFixed(dec(latStep)) + '</text>';
   }
-  const lonLo = Math.ceil((x0/kx)/lonStep)*lonStep, lonHi = x1/kx;
-  for(let v=lonLo; v<=lonHi+1e-9; v+=lonStep){
+  for(let v = Math.ceil((x0/kx)/lonStep)*lonStep; v <= x1/kx+1e-9; v += lonStep){
     const X = SX(v*kx);
     grid += '<line x1="' + X.toFixed(1) + '" y1="' + VB.t + '" x2="' + X.toFixed(1) +
             '" y2="' + (H-VB.b) + '"/>';
@@ -1051,7 +1315,7 @@ function buildChart(){
              '" text-anchor="middle" class="tk">' + v.toFixed(dec(lonStep)) + '</text>';
   }
 
-  /* --- walk route --------------------------------------------- */
+  /* walking route */
   let route = "";
   const walk = shown.filter(o => o.k==="walk").sort((a,b)=>a.i-b.i);
   if(walk.length > 1){
@@ -1059,7 +1323,7 @@ function buildChart(){
       walk.map(o => SX(px(o)).toFixed(1) + "," + SY(py(o)).toFixed(1)).join(" ") + '"/>';
   }
 
-  /* --- de-collide markers, keeping a leader to the true spot --- */
+  /* de-collide markers, keeping a leader to the true spot */
   const nodes = shown.map(o => {
     const X = SX(px(o)), Y = SY(py(o));
     return {o, x0:X, y0:Y, x:X, y:Y};
@@ -1081,31 +1345,21 @@ function buildChart(){
   nodes.forEach(n => {
     let dx=n.x-n.x0, dy=n.y-n.y0, d=Math.hypot(dx,dy);
     if(d > CAP){ n.x = n.x0 + dx/d*CAP; n.y = n.y0 + dy/d*CAP; }
-    n.x = Math.max(VB.l+11, Math.min(VB.w-VB.r-11, n.x));
-    n.y = Math.max(VB.t+11, Math.min(H-VB.b-11, n.y));
+    n.x = clamp(n.x, VB.l+11, VB.w-VB.r-11);
+    n.y = clamp(n.y, VB.t+11, H-VB.b-11);
   });
 
   let leaders = "", pins = "";
   nodes.forEach(n => {
-    const k = keyOf(n.o), isSel = sel === k, col = KIND[n.o.k].col;
     if(Math.hypot(n.x-n.x0, n.y-n.y0) > 4){
       leaders += '<line class="lead" x1="' + n.x0.toFixed(1) + '" y1="' + n.y0.toFixed(1) +
                  '" x2="' + n.x.toFixed(1) + '" y2="' + n.y.toFixed(1) + '"/>' +
                  '<circle class="true" cx="' + n.x0.toFixed(1) + '" cy="' + n.y0.toFixed(1) + '" r="1.4"/>';
     }
-    let shape;
-    if(n.o.k === "walk")      shape = '<circle r="9.6" fill="' + col + '"/>';
-    else if(n.o.k === "eat")  shape = '<rect x="-8.4" y="-8.4" width="16.8" height="16.8" fill="' + col + '"/>';
-    else if(n.o.k === "buy")  shape = '<rect x="-8" y="-8" width="16" height="16" transform="rotate(45)" fill="' + col + '"/>';
-    else                      shape = '<circle r="9.8" fill="' + col + '"/>' +
-                                      '<circle r="7.2" fill="none" stroke="#FBFAF6" stroke-width="1"/>';
-    pins += '<g class="pin" data-pin="' + k + '" transform="translate(' + n.x.toFixed(1) + ',' +
-              n.y.toFixed(1) + ')" role="button" tabindex="0" aria-label="' + esc(n.o.n) + '">' +
-              (isSel ? '<circle class="halo" r="15"/>' : '') + shape +
-              '<text y="3.3" text-anchor="middle">' + n.o.num + '</text></g>';
+    pins += pinSVG(n.o, n.x, n.y);
   });
 
-  /* --- scale bar and north arrow ------------------------------ */
+  /* scale bar and north arrow */
   const mPerUnit = 110574/scale;
   let barM = BAR_STEPS[0];
   for(const s of BAR_STEPS){ barM = s; if(s/mPerUnit >= 45) break; }
@@ -1122,46 +1376,216 @@ function buildChart(){
     (nx+3.2) + ',' + (ny+2) + '"/><text x="' + nx + '" y="' + (ny+26) +
     '" text-anchor="middle" class="tk">N</text></g>';
 
-  html += '<div class="chart-frame"><svg viewBox="0 0 ' + VB.w + ' ' + H +
+  host.innerHTML = '<svg viewBox="0 0 ' + VB.w + ' ' + H +
     '" role="img" aria-label="Chart of ' + esc(p.name) + '">' +
     '<g class="gr">' + grid + '</g>' +
     '<rect class="frm" x="' + VB.l + '" y="' + VB.t + '" width="' + iw + '" height="' + ih + '"/>' +
-    ticks + route + leaders + bar + north + pins +
-  '</svg></div>';
+    ticks + route + leaders + bar + north + pins + '</svg>';
 
-  /* --- selected detail ---------------------------------------- */
-  const chosen = shown.find(o => keyOf(o) === sel);
-  if(chosen) html += card(chosen);
-
-  /* --- index and off-chart ------------------------------------ */
-  html += '<div class="index"><h3>Index</h3>' + shown.map(o => {
-    const k = keyOf(o);
-    return '<button class="ixrow" data-pin="' + k + '" aria-current="' + (sel===k) + '">' +
-      glyph(o.k, o.num) + '<span class="ixname">' + esc(o.n) + '</span>' +
-      '<span class="ixsub">' + esc(KIND[o.k].t) + '</span></button>';
-  }).join("") +
-  '<p class="sec-note" style="margin-top:12px">Decimal degrees, WGS 84 — the same numbers your ' +
-  'phone reads. Stops and landmarks are surveyed to the door; kitchens, shops and film marks are ' +
-  'good to a block, which is all you need on foot. Where two pins would collide the marker is ' +
-  'nudged clear and a hairline points back to the true position.</p></div>';
-
-  html += offList(far, centre);
-  return html;
+  const svg = host.querySelector("svg");
+  proj = {svg, W:VB.w, H, mPerUnit,
+          toXY:(lat,lon) => ({x:SX(lon*kx), y:SY(-lat)})};
 }
 
-function offList(far, centre){
-  if(fitAll || !far.length) return "";
-  const rows = far.filter(o => layers[o.k]).sort((a,b) =>
-    kmBetween(centre,a.ll) - kmBetween(centre,b.ll));
-  if(!rows.length) return "";
-  return '<div class="off"><h3>Off the chart</h3>' + rows.map(o =>
-    '<div class="offrow">' + glyph(o.k, o.num) +
-      '<span class="oname">' + esc(o.n) +
-        '<span class="osub">' + esc(o.sub || "") + '</span></span>' +
-      '<span class="bearing">' + compass(centre, o.ll) + ' ' + dist(kmBetween(centre, o.ll)) + '</span>' +
-    '</div>').join("") +
-    '<p class="sec-note" style="margin-top:10px">Bearings and distances are from the middle of the ' +
-    'old town. Switch the chart to <strong>whole coast</strong> to plot them.</p></div>';
+/* ============================================================
+   The real map — OpenStreetMap tiles under the same pins
+   ============================================================ */
+function fitZoom(list, W, H){
+  if(!list.length) return 16;
+  const lats = list.map(o=>o.ll.lat), lons = list.map(o=>o.ll.lon);
+  const a = {lat:Math.max(...lats), lon:Math.min(...lons)};
+  const b = {lat:Math.min(...lats), lon:Math.max(...lons)};
+  for(let z = MAXZ; z >= MINZ; z--){
+    const p1 = worldPx(a.lat, a.lon, z), p2 = worldPx(b.lat, b.lon, z);
+    if((p2.x-p1.x) <= W*0.84 && (p2.y-p1.y) <= H*0.84) return z;
+  }
+  return MINZ;
+}
+
+function fitPort(){
+  const host = $("#viewbox"); if(!host) return;
+  const s = chartSets();
+  /* frame the town, not the day trips — the far pins are still on the map,
+     they are just outside the opening view. */
+  const town = s.near.filter(o => layers[o.k]);
+  const list = town.length ? town : (s.shown.length ? s.shown : s.all);
+  const lats = list.map(o=>o.ll.lat), lons = list.map(o=>o.ll.lon);
+  mapView = {
+    lat: (Math.max(...lats)+Math.min(...lats))/2,
+    lon: (Math.max(...lons)+Math.min(...lons))/2,
+    z: fitZoom(list, host.clientWidth || 360, host.clientHeight || 420)
+  };
+  followMe = false;
+}
+function centreOn(lat, lon){
+  if(!mapView) return;
+  mapView.lat = lat; mapView.lon = lon;
+  drawMap(); paintMe();
+}
+
+function drawMap(){
+  const host = $("#viewbox"); if(!host) return;
+  if(!host.querySelector(".tiles")){
+    tiles = new Map();
+    host.innerHTML =
+      '<div class="tiles"></div>' +
+      '<svg class="ovl"></svg>' +
+      '<div class="zoomctl">' +
+        '<button data-zoom="1" aria-label="Zoom in">+</button>' +
+        '<button data-zoom="-1" aria-label="Zoom out">&minus;</button></div>' +
+      '<div class="attrib">&copy; <a href="https://www.openstreetmap.org/copyright" ' +
+        'target="_blank" rel="noopener">OpenStreetMap</a> contributors</div>';
+    bindMapGestures(host);
+  }
+  const W = host.clientWidth, H = host.clientHeight;
+  if(!W || !H) return;
+  if(!mapView) fitPort();
+
+  const c = worldPx(mapView.lat, mapView.lon, mapView.z);
+  const oX = c.x - W/2, oY = c.y - H/2;
+
+  /* tiles */
+  const layer = host.querySelector(".tiles");
+  const tz = clamp(Math.round(mapView.z), MINZ, MAXZ);
+  const k = Math.pow(2, mapView.z - tz);
+  const n = Math.pow(2, tz), size = 256*k;
+  const wx = oX/k, wy = oY/k;
+  const tx0 = Math.floor(wx/256), tx1 = Math.floor((wx + W/k)/256);
+  const ty0 = Math.floor(wy/256), ty1 = Math.floor((wy + H/k)/256);
+  const want = new Set();
+  for(let tx = tx0; tx <= tx1; tx++){
+    for(let ty = ty0; ty <= ty1; ty++){
+      if(ty < 0 || ty >= n) continue;
+      const wrap = ((tx % n) + n) % n, key = tz+"/"+wrap+"/"+ty;
+      want.add(key);
+      let img = tiles.get(key);
+      if(!img){
+        img = new Image(); img.alt = ""; img.decoding = "async";
+        img.addEventListener("error", () => img.classList.add("dead"));
+        img.src = TILE_URL.replace("{z}",tz).replace("{x}",wrap).replace("{y}",ty);
+        layer.appendChild(img); tiles.set(key, img);
+      }
+      img.style.width = img.style.height = size.toFixed(2)+"px";
+      img.style.left = (tx*256*k - oX).toFixed(2)+"px";
+      img.style.top  = (ty*256*k - oY).toFixed(2)+"px";
+    }
+  }
+  tiles.forEach((el, key) => { if(!want.has(key)){ el.remove(); tiles.delete(key); } });
+
+  proj = {svg: host.querySelector(".ovl"), W, H,
+          mPerUnit: mPerPx(mapView.lat, mapView.z),
+          toXY:(lat,lon) => { const q = worldPx(lat, lon, mapView.z);
+                              return {x:q.x-oX, y:q.y-oY}; }};
+  proj.svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+  drawOverlay();
+}
+
+function drawOverlay(){
+  if(!proj || !proj.svg) return;
+  const {shown} = chartSets();
+  let route = "";
+  const walk = shown.filter(o => o.k==="walk").sort((a,b)=>a.i-b.i);
+  if(walk.length > 1){
+    route = '<polyline class="route" points="' + walk.map(o => {
+      const q = proj.toXY(o.ll.lat, o.ll.lon);
+      return q.x.toFixed(1)+","+q.y.toFixed(1);
+    }).join(" ") + '"/>';
+  }
+  const pins = shown.map(o => {
+    const q = proj.toXY(o.ll.lat, o.ll.lon);
+    return (q.x > -30 && q.x < proj.W+30 && q.y > -30 && q.y < proj.H+30)
+      ? pinSVG(o, q.x, q.y) : "";
+  }).join("");
+  proj.svg.innerHTML = route + pins;
+  paintMe();
+}
+
+function pinSVG(o, x, y){
+  const k = keyOf(o), col = KIND[o.k].col;
+  let shape;
+  if(o.k === "walk")      shape = '<circle r="9.6" fill="' + col + '"/>';
+  else if(o.k === "eat")  shape = '<rect x="-8.4" y="-8.4" width="16.8" height="16.8" fill="' + col + '"/>';
+  else if(o.k === "buy")  shape = '<rect x="-8" y="-8" width="16" height="16" transform="rotate(45)" fill="' + col + '"/>';
+  else                    shape = '<circle r="9.8" fill="' + col + '"/>' +
+                                  '<circle r="7.2" fill="none" stroke="#FBFAF6" stroke-width="1"/>';
+  return '<g class="pin' + (sel===k ? " on" : "") + '" data-pin="' + k +
+    '" transform="translate(' + x.toFixed(1) + ',' + y.toFixed(1) + ')" role="button" ' +
+    'tabindex="0" aria-label="' + esc(o.n) + '">' +
+    '<circle class="halo" r="15"/>' + shape +
+    '<text y="3.3" text-anchor="middle">' + o.num + '</text></g>';
+}
+
+/* ============================================================
+   Map gestures — drag to pan, pinch or wheel to zoom
+   ============================================================ */
+function bindMapGestures(host){
+  const pts = new Map();
+  let last = null, pinch = null, raf = 0;
+  const redraw = () => { if(raf) return;
+    raf = requestAnimationFrame(() => { raf = 0; drawMap(); paintMe(); }); };
+
+  host.addEventListener("pointerdown", e => {
+    if(e.target.closest("[data-zoom],[data-pin],.attrib")) return;
+    host.setPointerCapture(e.pointerId);
+    pts.set(e.pointerId, {x:e.clientX, y:e.clientY});
+    if(pts.size === 1) last = {x:e.clientX, y:e.clientY};
+    if(pts.size === 2){
+      const [a,b] = [...pts.values()];
+      pinch = {d: Math.hypot(a.x-b.x, a.y-b.y), z: mapView.z};
+    }
+  });
+
+  host.addEventListener("pointermove", e => {
+    if(!pts.has(e.pointerId) || !mapView) return;
+    pts.set(e.pointerId, {x:e.clientX, y:e.clientY});
+    const r = host.getBoundingClientRect();
+    if(pts.size === 2 && pinch){
+      const [a,b] = [...pts.values()];
+      const d = Math.hypot(a.x-b.x, a.y-b.y);
+      if(d > 8){
+        followMe = false;
+        zoomAt(pinch.z + Math.log2(d/pinch.d),
+               (a.x+b.x)/2 - r.left, (a.y+b.y)/2 - r.top, host);
+        redraw();
+      }
+      return;
+    }
+    if(pts.size === 1 && last){
+      const dx = e.clientX - last.x, dy = e.clientY - last.y;
+      if(Math.abs(dx) + Math.abs(dy) < 1) return;
+      last = {x:e.clientX, y:e.clientY};
+      followMe = false;
+      const c = worldPx(mapView.lat, mapView.lon, mapView.z);
+      const q = pxToLL(c.x - dx, c.y - dy, mapView.z);
+      mapView.lat = clamp(q.lat, -85, 85); mapView.lon = q.lon;
+      redraw();
+    }
+  });
+
+  const end = e => { pts.delete(e.pointerId);
+    if(pts.size < 2) pinch = null;
+    if(pts.size === 0) last = null; else last = [...pts.values()][0]; };
+  host.addEventListener("pointerup", end);
+  host.addEventListener("pointercancel", end);
+
+  host.addEventListener("wheel", e => {
+    if(!mapView) return;
+    e.preventDefault();
+    const r = host.getBoundingClientRect();
+    followMe = false;
+    zoomAt(mapView.z - Math.sign(e.deltaY)*0.5, e.clientX - r.left, e.clientY - r.top, host);
+    redraw();
+  }, {passive:false});
+}
+
+function zoomAt(z, sx, sy, host){
+  const W = host.clientWidth, H = host.clientHeight;
+  const c0 = worldPx(mapView.lat, mapView.lon, mapView.z);
+  const anchor = pxToLL(c0.x - W/2 + sx, c0.y - H/2 + sy, mapView.z);
+  mapView.z = clamp(z, MINZ, MAXZ);
+  const a = worldPx(anchor.lat, anchor.lon, mapView.z);
+  const c = pxToLL(a.x + (W/2 - sx), a.y + (H/2 - sy), mapView.z);
+  mapView.lat = clamp(c.lat, -85, 85); mapView.lon = c.lon;
 }
 
 /* ============================================================
@@ -1210,7 +1634,7 @@ function renderPanel(){
   else if(tab === "buy")    $("#panel").innerHTML = renderCards("buy");
   else if(tab === "screen") $("#panel").innerHTML = renderCards("screen",
     "What was filmed here, and what only pretends to have been. Everything below is a real location you can stand on unless the card says otherwise.");
-  else if(tab === "chart")  $("#panel").innerHTML = buildChart();
+  else if(tab === "chart"){ $("#panel").innerHTML = chartShell(); drawView(); }
   else $("#panel").innerHTML = '<ul class="know">' +
     p.know.map(k => "<li>" + esc(k) + "</li>").join("") + "</ul>";
 }
@@ -1226,11 +1650,16 @@ function renderAll(){
    ============================================================ */
 document.addEventListener("click", e => {
   const pb = e.target.closest("[data-port]");
-  if(pb){ cur = pb.dataset.port; sel = null; store.set("sb.port", cur);
-    renderAll(); window.scrollTo(0,0); return; }
+  if(pb){ cur = pb.dataset.port; sel = null; mapView = null; followMe = false;
+    store.set("sb.port", cur); renderAll(); window.scrollTo(0,0); return; }
 
   const tb = e.target.closest(".tab");
   if(tb){ tab = tb.dataset.tab; renderAll(); return; }
+
+  const md = e.target.closest("[data-setmode]");
+  if(md){ if(md.dataset.setmode === mode) return;
+    mode = md.dataset.setmode; store.set("sb.mode", mode);
+    renderPanel(); return; }
 
   const lay = e.target.closest("[data-layer]");
   if(lay){ const k = lay.dataset.layer; layers[k] = !layers[k];
@@ -1240,19 +1669,43 @@ document.addEventListener("click", e => {
   const fit = e.target.closest("[data-fit]");
   if(fit){ fitAll = !fitAll; renderPanel(); return; }
 
+  const fp = e.target.closest("[data-fitport]");
+  if(fp){ fitPort(); drawMap(); paintMe(); paintLocBar(); return; }
+
+  const zm = e.target.closest("[data-zoom]");
+  if(zm){ const host = $("#viewbox");
+    if(host && mapView){ followMe = false;
+      zoomAt(mapView.z + (+zm.dataset.zoom), host.clientWidth/2, host.clientHeight/2, host);
+      drawMap(); paintMe(); }
+    return; }
+
+  const gb = e.target.closest("[data-geo]");
+  if(gb){ const what = gb.dataset.geo;
+    if(what === "on") startGeo();
+    else if(what === "off") stopGeo();
+    else if(what === "follow"){ followMe = !followMe;
+      if(followMe && geo.fix){ mapView.z = Math.max(mapView.z, 17);
+        centreOn(geo.fix.lat, geo.fix.lon); }
+      paintLocBar(); }
+    return; }
+
   const gp = e.target.closest("[data-gpx]");
   if(gp){ const p = port();
     download("shore-book-" + p.id + ".gpx", gpxFor(p), "application/gpx+xml"); return; }
 
   const pin = e.target.closest("[data-pin]");
-  if(pin){ const k = pin.dataset.pin; sel = (sel === k) ? null : k; renderPanel();
+  if(pin){ selectPin(pin.dataset.pin, false);
     const c = sel && $("#card-" + CSS.escape(sel));
     if(c) c.scrollIntoView({block:"nearest", behavior:"smooth"});
     return; }
 
   const go = e.target.closest("[data-goto]");
-  if(go){ sel = go.dataset.goto; tab = "chart"; renderAll();
-    window.scrollTo({top:0, behavior:"smooth"}); return; }
+  if(go){ const k = go.dataset.goto;
+    if(tab === "chart"){ selectPin(k, true); }
+    else { sel = k; tab = "chart"; renderAll();
+      if(mode === "map") selectPin(k, true);
+      window.scrollTo({top:0, behavior:"smooth"}); }
+    return; }
 
   const chk = e.target.closest("[data-check]");
   if(chk){
@@ -1271,7 +1724,14 @@ document.addEventListener("keydown", e => {
   const pin = e.target.closest && e.target.closest("g[data-pin]");
   if(!pin) return;
   e.preventDefault();
-  const k = pin.dataset.pin; sel = (sel === k) ? null : k; renderPanel();
+  selectPin(pin.dataset.pin, false);
+});
+
+/* the map is sized in CSS pixels, so it has to be redrawn when they change */
+let rz = 0;
+window.addEventListener("resize", () => {
+  if(tab !== "chart" || mode !== "map") return;
+  clearTimeout(rz); rz = setTimeout(() => { drawMap(); paintMe(); }, 150);
 });
 
 $("#ashore").addEventListener("change", e => {
@@ -1286,6 +1746,9 @@ $("#today").textContent = d.toLocaleDateString("en-GB",
 
 renderAll();
 setInterval(() => { renderTide(); if(tab==="walk") renderPanel(); }, 60000);
+
+/* If location was on last time the permission is already granted — resume quietly. */
+if(store.get("sb.geo") === "1") startGeo();
 
 /* Offline: cache the app on first load so it runs with no signal. */
 if("serviceWorker" in navigator){
