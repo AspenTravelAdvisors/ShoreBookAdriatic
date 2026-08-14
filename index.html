@@ -19,6 +19,7 @@
   --sea-tint:#DDE7E9;
   --rosso:#8C2F39;
   --reel:#8A6B1F;
+  --olio:#4F6B2F;
   --rule:#C9C6BB;
   --mute:#6E7378;
   --display:"Didot","Bodoni 72",Didot LT STD,"Hoefler Text",Georgia,serif;
@@ -123,6 +124,15 @@ h1{
   color:var(--rosso);display:block;margin-bottom:2px;font-weight:400}
 .leg{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;
   color:var(--mute);margin-top:10px}
+
+/* ---------- food tour (a rail, but nothing to tick off) ---------- */
+.dot.static{cursor:default;line-height:17px}
+.stop.taste .dot{border-color:var(--olio);color:var(--olio)}
+.stop-where{display:block;font-family:var(--body);font-size:12.5px;line-height:1.35;
+  color:var(--mute);margin-top:3px}
+.stop-dur em{display:block;font-style:normal;font-size:10px;text-align:right;margin-top:3px}
+.look.ord{border-left-color:var(--olio)}
+.look.ord b{color:var(--olio)}
 .geo{display:inline-block;margin-top:9px;font-family:var(--mono);font-size:11px;
   color:var(--sea);text-decoration:none;border-bottom:1px solid var(--sea-tint)}
 .geo+.geo{margin-left:14px}
@@ -160,6 +170,8 @@ h1{
 .gly.k-buy i{transform:rotate(-45deg)}
 .gly.k-screen{background:var(--reel);border-radius:50%;
   box-shadow:inset 0 0 0 1px var(--reel), inset 0 0 0 2.4px var(--sand)}
+.gly.k-taste{background:var(--olio);clip-path:polygon(50% 0,100% 100%,0 100%)}
+.gly.k-taste i{margin-top:6px;font-size:9px}
 
 /* ---------- cards ---------- */
 .card{border:1px solid var(--rule);background:var(--sand);padding:11px 12px;margin:0 0 10px}
@@ -193,6 +205,7 @@ h1{
 .sw.k-eat{background:var(--rosso)}
 .sw.k-buy{background:var(--sea);transform:rotate(45deg)}
 .sw.k-screen{background:var(--reel);border-radius:50%}
+.sw.k-taste{background:var(--olio);clip-path:polygon(50% 0,100% 100%,0 100%)}
 .seg{display:inline-flex}
 .lay.wide{border-color:var(--ink);color:var(--ink)}
 .seg .lay+.lay{border-left-width:0}
@@ -215,6 +228,7 @@ h1{
 .ovl .pin .halo{fill:#FBFAF6;fill-opacity:.7;stroke:#131E28;stroke-width:1.4}
 .ovl .route{stroke:#131E28;stroke-width:1.6;opacity:.8;
   filter:drop-shadow(0 0 1.5px rgba(251,250,246,.95))}
+.ovl .route.taste{stroke:#4F6B2F;stroke-dasharray:5 4}
 .attrib{position:absolute;right:0;bottom:0;background:rgba(251,250,246,.86);
   font-family:var(--mono);font-size:8.5px;letter-spacing:.02em;color:var(--mute);padding:2px 5px}
 .attrib a{color:var(--sea)}
@@ -272,6 +286,7 @@ body.fsmap{overflow:hidden}
 .tk{font-family:Menlo,monospace;font-size:6.5px;fill:#6E7378;letter-spacing:.04em}
 .frm{fill:none;stroke:#C9C6BB;stroke-width:.8}
 .route{fill:none;stroke:#131E28;stroke-width:1;stroke-dasharray:4 3;opacity:.5}
+.route.taste{stroke:#4F6B2F;stroke-dasharray:1 3;opacity:.75}
 .lead{stroke:#6E7378;stroke-width:.5}
 .true{fill:#6E7378}
 .pin{cursor:pointer}
@@ -319,6 +334,7 @@ footer{border-top:1px solid var(--rule);margin-top:26px;padding:14px 0 0;
 <div class="tabs" role="tablist" aria-label="Sections">
   <button class="tab" role="tab" data-tab="walk" aria-selected="true">Walk</button>
   <button class="tab" role="tab" data-tab="eat" aria-selected="false">Eat</button>
+  <button class="tab" role="tab" data-tab="taste" aria-selected="false">Taste</button>
   <button class="tab" role="tab" data-tab="buy" aria-selected="false">Buy</button>
   <button class="tab" role="tab" data-tab="screen" aria-selected="false">Screen</button>
   <button class="tab" role="tab" data-tab="chart" aria-selected="false">Chart</button>
@@ -390,6 +406,39 @@ const PORTS = [
     {n:"Cantina Do Mori", t:"Bacaro", d:"Operating since 1462. Dark, narrow, hung with copper. Order francobolli and an ombra.", c:"45.4381,12.3335"},
     {n:"Trattoria alla Madonna", t:"Sit-down", d:"Old-guard Venetian fish near Rialto. Unfashionable in the best sense.", c:"45.4378,12.3345"},
     {n:"Pasticceria Tonolo", t:"Breakfast", d:"Dorsoduro. Stand at the bar, take a krapfen, do not ask for a cappuccino after eleven.", c:"45.4362,12.3235"}
+  ],
+  tasteNote:"Venice eats standing up. A cicchetto is one mouthful on bread or a stick, an ombra is the small glass of wine that goes with it, and the pair costs a fraction of a sat-down meal. Go in the morning: the bars cook what the market had at seven and they sell out.",
+  taste:[
+    {n:"Pasticceria Rizzardini", sp:"Krapfen and an espresso", pr:"€3–4", dur:15, leg:5,
+     d:"A pasticceria of 1742 in a campiello two minutes south of the Rialto, with a marble counter and nowhere much to sit. Venetian breakfast is taken upright and takes four minutes.",
+     o:"A krapfen or a handful of zaeti — the cornmeal-and-raisin biscuits. Espresso, or a macchiato. No cappuccino past eleven unless you want to be spotted.",
+     x:"Cash is quickest. Closed Tuesday. Coffee at the bar costs roughly a third of coffee at a table, by law.",
+     c:"45.4363,12.3296"},
+    {n:"All'Arco", sp:"Cicchetti", pr:"€2–3 each", dur:25, leg:2,
+     d:"Fifty metres behind the Pescaria, which is the whole explanation. Father and son build the day's cicchetti from what crossed the market counter that morning and stop when it is gone.",
+     o:"Baccalà mantecato on white polenta, sarde in saor, and whichever raw crudo is on the board. An ombra of Soave with it.",
+     x:"Standing room and a shelf. Shuts mid-afternoon and does no dinner. Closed Sunday, and Saturday afternoon when the market is quiet.",
+     c:"45.4382,12.3331"},
+    {n:"Cantina Do Mori", sp:"Francobolli and an ombra", pr:"€2–4", dur:15, leg:5,
+     d:"Pouring since 1462, which makes it the oldest bacaro in the city. Dark, narrow, hung with copper pans, and you will be shoulder to shoulder with someone's grandfather.",
+     o:"Francobolli — postage-stamp sandwiches, half a dozen fillings — and a glass of whatever red is open.",
+     x:"No seats at all, by design. Cash. Closed Sunday.",
+     c:"45.4381,12.3335"},
+    {n:"Acqua e Mais", sp:"Fritto misto in a cone", pr:"€5–8", dur:10, leg:14,
+     d:"A hatch on Campiello dei Meloni doing the old Venetian fry-shop trade: seafood out of the fryer into a paper cone, and polenta with whatever the lagoon gave up.",
+     o:"A cone of fritto misto, or polenta e schie — grey lagoon shrimp on soft white polenta, a dish that exists nowhere else.",
+     x:"Nowhere to sit. Take it to the Rialto steps. Opens late morning.",
+     c:"45.4363,12.3297"},
+    {n:"Osteria alla Vedova", sp:"Polpette", pr:"€2 each", dur:25, leg:25,
+     d:"Cannaregio, over the Rialto and north, past the point where the day-trippers turn back. The fried meatball here is the single most argued-about mouthful in Venice and it is worth the walk.",
+     o:"Two polpette at the bar and an ombra. If you want the dining room instead, that needs booking and a different afternoon.",
+     x:"Cash only. No reservations for the bar. Closed Thursday and Sunday lunch.",
+     c:"45.4405,12.3336"},
+    {n:"Gelateria Nico, Zattere", sp:"Gianduiotto da passeggio", pr:"€4–6", dur:20, leg:0,
+     d:"On the southern quay since 1935, facing Giudecca across open water. The gianduiotto is a block of hazelnut gelato drowned in whipped cream, invented on this counter and copied badly everywhere else.",
+     o:"Gianduiotto da passeggio, then walk west along the Zattere with it.",
+     x:"This lands you at the last stop of the walk. Time it for the hour before sunset and you have done Venice properly.",
+     c:"45.4304,12.3242"}
   ],
   buy:[
     {n:"Marbled paper", d:"Legatoria Polliero by the Frari, and Il Pavone in Dorsoduro. Hand-combed, not printed — check the edge of the sheet.", c:"45.4369,12.3264"},
@@ -479,6 +528,39 @@ const PORTS = [
     {n:"Lucin Kantun", t:"Konoba", d:"Six tables, handwritten menu, quietly one of the best kitchens inside the walls.", c:"42.6417,18.1084"},
     {n:"Dubravka 1836", t:"Terrace", d:"By Pile Gate with a view up the walls to Lovrijenac. Ordinary food, extraordinary position.", c:"42.6417,18.1066"},
     {n:"Kopun", t:"Sit-down", d:"On Boškovića square. Capon in honey and orange is the historic house dish.", c:"42.6411,18.1109"}
+  ],
+  tasteNote:"The walled town is expensive and much of it is cooking for cruise passengers. The way around that is to eat off counters and out of the market, where the actual Dalmatian food is — cured ham, sheep's cheese, oysters off Ston, and candied orange peel that has been made here since the Republic.",
+  taste:[
+    {n:"Gundulić Square market", sp:"Arancini, dried figs, smokvenjak", pr:"€3–8 a bag", dur:20, leg:2,
+     d:"Trestle tables under white umbrellas every morning but Sunday. Arancini here are not the Sicilian rice balls — they are candied orange peel, boiled through sugar syrup and dried, a Dubrovnik habit older than any guidebook.",
+     o:"A bag of arancini, dried figs, and smokvenjak — pressed fig cake studded with almonds. All three travel in a pocket for days.",
+     x:"Packs up around 13:00. Cash. Taste before you buy; the stallholders expect it.",
+     c:"42.6405,18.1095"},
+    {n:"Buffet Škola", sp:"Pršut and Dubrovnik cheese sandwich", pr:"€8–11", dur:20, leg:2,
+     d:"Six stools in a lane off the Stradun, and one idea executed for decades: home-baked flatbread cut open, Dalmatian prosciutto, sheep's cheese, a smear of ajvar.",
+     o:"The half sandwich is enough for most people. A glass of house white with it.",
+     x:"Genuinely tiny. If there is a queue, take it away — that is what everyone else is doing.",
+     c:"42.6417,18.1090"},
+    {n:"Kamenice", sp:"Ston oysters", pr:"€2–3 each", dur:25, leg:3,
+     d:"The name means oysters, which saves reading the menu. Mali Ston bay, an hour up the coast, has farmed them since Roman times and the Republic ran the beds as a state asset.",
+     o:"Half a dozen with lemon, and fried anchovies alongside. A glass of cold Pošip.",
+     x:"On the market square, so it runs on the same clock as the stalls. September is good oyster season here — the summer spawning months are the ones to avoid.",
+     c:"42.6404,18.1097"},
+    {n:"Barba", sp:"Octopus burger", pr:"€7–10", dur:20, leg:4,
+     d:"Counter service, paper wrapping, no ceremony. The octopus burger is what people queue for; the cone of fried small fish is the more honestly Dalmatian order.",
+     o:"Octopus burger, or shrimp on a stick, or a cone of fried anchovies to walk with.",
+     x:"Standing at a shelf, or take it to the Jesuit stairs. Fast, which is the point on a ship day.",
+     c:"42.6415,18.1101"},
+    {n:"Peppino's", sp:"Gelato", pr:"€3–5", dur:10, leg:5,
+     d:"Made on the premises on Od Puča, and the correct response to a limestone city holding thirty degrees of heat in its walls.",
+     o:"Fig, or the local honey, or anything carrying rosemary or lavender.",
+     x:"There is a second counter closer to the Stradun serving the same ice cream to a longer queue.",
+     c:"42.6408,18.1086"},
+    {n:"Kopun", sp:"Rožata", pr:"€6–8", dur:30, leg:0,
+     d:"The one plate on this tour you sit down for. Rožata is a caramel custard set with rose liqueur — the Republic's own dessert rather than the coast's, and it is on every menu in town made properly on about four of them.",
+     o:"Rožata and a coffee. If you are staying for dinner, capon in honey and orange is the house's historic dish and the reason for the name.",
+     x:"On Boškovića square. Dessert alone in the afternoon is normally fine; dinner needs booking.",
+     c:"42.6411,18.1109"}
   ],
   buy:[
     {n:"Konavle embroidery", d:"Geometric red-and-black silk work from the valley south of town. Look for the hand-knotted reverse, not a printed panel.", c:"42.6408,18.1099"},
@@ -578,6 +660,34 @@ const PORTS = [
     {n:"Bokun", t:"Wine bar", d:"Small plates and Montenegrin wine — ask for Vranac and Krstač.", c:"42.4247,18.7712"},
     {n:"Ladovina", t:"Sit-down", d:"Just outside the old town, less cruise-facing, better value.", c:"42.4269,18.7683"}
   ],
+  tasteNote:"Montenegro's coast cooks Venetian and its mountains cook Balkan, and Kotor is the seam between them. The best of it comes down from Njeguši, a village at 900 m on the Cetinje road, and is sold on a market table two hundred metres from where the ship ties up.",
+  taste:[
+    {n:"The market outside the Sea Gate", sp:"Njeguši pršut, cheese in oil, figs", pr:"€5–15", dur:25, leg:3,
+     d:"Open tables along the wall between the berth and the gate. The bura wind dries ham at Njeguši better than anywhere on this coast; the cheese comes down the mountain in jars of its own oil.",
+     o:"A hundred grams of pršut cut in front of you, a jar of cheese, dried figs, walnuts, and a pot of mountain honey.",
+     x:"Mornings — best before 11:00. Cash. Vacuum-packed ham travels, but check your own customs allowance before buying meat.",
+     c:"42.4239,18.7699"},
+    {n:"The bakery on the Square of Arms", sp:"Burek and drinking yoghurt", pr:"€2–4", dur:15, leg:2,
+     d:"Burek is the Balkan breakfast: filo coiled into a round tray, baked, cut by weight and handed over hot in paper. Meat, cheese, spinach or potato, and it is eaten before nine.",
+     o:"Sirnica — the cheese coil — by weight, and a kefir or drinking yoghurt to cut it.",
+     x:"Open from around 07:00, which makes this the right thing to hold before the fortress climb rather than after it. Cash.",
+     c:"42.4247,18.7708"},
+    {n:"Bokun", sp:"Njeguši board and a glass of Vranac", pr:"€8–14", dur:30, leg:2,
+     d:"A small wine bar in the lanes that pours Montenegrin and nothing else. Vranac is the black grape of the Zeta valley; Krstač is the white, and is grown almost nowhere outside this country.",
+     o:"The prosciutto and cheese board, a glass of Vranac, then a glass of Krstač to see the difference.",
+     x:"Stone, shade and quiet — useful between 13:00 and 15:00 when the walled town turns into an oven.",
+     c:"42.4247,18.7712"},
+    {n:"Konoba Scala Santa", sp:"Priganice with honey and kajmak", pr:"€5–7", dur:25, leg:6,
+     d:"Priganice are knuckles of yeast dough dropped into hot oil and eaten immediately, sweet with honey or salted with young cheese. Every Montenegrin grandmother makes them; the konobas keep the habit alive for everyone else.",
+     o:"A plate of priganice with honey and kajmak, shared between two.",
+     x:"The one plate here you sit down for. Lamb under the sač is the other house dish and needs ordering hours ahead.",
+     c:"42.4249,18.7719"},
+    {n:"Tanjga", sp:"Ćevapi off the grill", pr:"€6–10", dur:30, leg:0,
+     d:"Outside the walls by the Škurda, a yard of charcoal grills and plastic chairs where Kotor eats when it is not selling lunch to a ship. Meat by weight, bread, raw onion, no menu worth reading.",
+     o:"Ćevapi or a pljeskavica in lepinja, with kajmak and onion. Order by the ten.",
+     x:"Cash, and cheap enough to be suspicious of until it arrives. Ten minutes on foot from the Sea Gate.",
+     c:"42.4267,18.7686"}
+  ],
   buy:[
     {n:"Njeguši prosciutto", d:"Air-dried in the mountain village above the bay. Vacuum packs travel; check your customs allowance before buying meat.", c:"42.4246,18.7710"},
     {n:"Rakija", d:"Loza (grape) and kruna (pear). Buy from a shop with a producer name on the label, not a souvenir bottle.", c:"42.4248,18.7709"},
@@ -652,6 +762,34 @@ const PORTS = [
     {n:"Giaxa", t:"Fine", d:"In a 15th-century palace. The formal option on the island.", c:"43.1728,16.4417"},
     {n:"Fig Café", t:"Casual", d:"Breakfast and light lunch, run by expats, reliably good coffee.", c:"43.1726,16.4413"}
   ],
+  tasteNote:"Hvar town's restaurant prices are set by the yachts in the harbour. The island's own food is not: figs, almonds, capers, salted anchovies and cakes that predate the nightclubs by four centuries — all of it within three minutes of the main square.",
+  taste:[
+    {n:"The morning market by the Arsenal", sp:"Figs, almonds, capers, lavender honey", pr:"€4–10", dur:20, leg:2,
+     d:"A handful of tables at the harbour end of St Stephen's Square. September is fig season and the island dries them on racks in the sun; the capers grow wild out of the same walls you have been photographing all morning.",
+     o:"Dried figs, almonds, a jar of salted capers, and lavender or rosemary honey.",
+     x:"Mornings only and small — if a ship is in, go before 10:00. Cash.",
+     c:"43.1724,16.4424"},
+    {n:"Nonica", sp:"Forška torta, rafioli, paprenjak", pr:"€2–4 each", dur:15, leg:2,
+     d:"A one-room cake shop making the island's traditional sweets to household recipes. The forška torta is Hvar's almond cake; rafioli are almond paste folded into pastry; paprenjak is a peppered honey biscuit that went to sea because it kept for months.",
+     o:"One of each in a paper bag, eaten on the square. The paprenjak is the one that survives a rucksack.",
+     x:"Small, and it sells out by the afternoon. Cash preferred.",
+     c:"43.1726,16.4423"},
+    {n:"Fig Café", sp:"Coffee and something fried", pr:"€4–8", dur:20, leg:3,
+     d:"Expat-run, tiny, and the most reliable coffee in a town that treats coffee as a competitive sport. Also the easiest breakfast if you are ashore early for the fortress.",
+     o:"Coffee and whatever is chalked up. Take it away and drink it on the harbour wall.",
+     x:"Queues at breakfast. Cash and card.",
+     c:"43.1726,16.4413"},
+    {n:"3 Pršuta", sp:"Pršut, island cheese, Plavac Mali", pr:"€10–16", dur:30, leg:3,
+     d:"A narrow wine bar off the square pouring Dalmatian bottles by the glass. Plavac Mali is the island's black grape, grown on the southern slopes at Sveta Nedjelja on a gradient you would not willingly walk up.",
+     o:"A pršut and cheese board, a glass of Plavac from the south side, and a taste of Prošek to finish.",
+     x:"Standing room and two or three tables. Fills after 19:00 and stays full.",
+     c:"43.1727,16.4417"},
+    {n:"Konoba Menego", sp:"Cured meat, cheese, marinated anchovies", pr:"€15–25", dur:45, leg:0,
+     d:"Up the steps behind the square, stone-walled, candlelit and stubbornly unmodernised. There is no pizza and no pasta — only what the island cures, pickles, salts and grows.",
+     o:"The board of cured meats and cheese, marinated anchovies, and a carafe of the house red.",
+     x:"The one place on this tour to sit down properly. Small — go at opening or reserve.",
+     c:"43.1727,16.4420"}
+  ],
   buy:[
     {n:"Agave lace", d:"From the Benedictine convent only. Anything sold on the riva as Hvar lace is not this.", c:"43.1729,16.4425"},
     {n:"Lavender", d:"The island's signature crop. Oil and dried bundles from the market stalls; check for a Hvar producer, since much sold here is imported.", c:"43.1724,16.4425"},
@@ -721,6 +859,34 @@ const PORTS = [
     {n:"Konoba Skoblar", t:"Konoba", d:"On the market square. Grilled fish by the kilo, priced honestly.", c:"44.1146,15.2262"},
     {n:"Bruschetta", t:"Waterfront", d:"On the quay facing the channel. Reserve a terrace table for sunset.", c:"44.1173,15.2233"},
     {n:"Kavana Danica", t:"Café", d:"Old-school coffee and cake on Kalelarga. Do as the locals do and take an hour over it.", c:"44.1152,15.2251"}
+  ],
+  tasteNote:"Zadar is a working city that feeds itself rather than its visitors, which makes it the best value on this coast. The market is the whole argument: sheep's cheese from the island up the channel, salt raked by hand at Nin, and a cherry liqueur industrialised on this street in 1821.",
+  taste:[
+    {n:"Green market & fish hall", sp:"Paški sir, Nin salt, figs, šokol", pr:"€5–15", dur:30, leg:2,
+     d:"An open square and two halls behind the Roman forum. Pag cheese is sheep's milk off an island with almost no soil, where the flock grazes on herbs the bura has blown salt into — it tastes of precisely that, and nothing else does.",
+     o:"A wedge of aged Paški sir, a bag of Nin salt, September figs, and šokol — the cured neck the Nin butchers make.",
+     x:"Best before 11:00, largely finished by 14:00. Cash. Walk through the fish hall even if you buy nothing.",
+     c:"44.1147,15.2261"},
+    {n:"Konoba Skoblar", sp:"Fried girice and grilled sardines", pr:"€8–14", dur:30, leg:4,
+     d:"On the edge of the market, so the fish has travelled about forty metres. Small fish fried whole is the Dalmatian working lunch — priced by the kilo, eaten with bread and chard, no plating involved.",
+     o:"Girice (fried whitebait) or sardines off the grill, blitva with potato and garlic, and a glass of Pošip.",
+     x:"Grilled fish is sold by weight. Ask the price per kilo before you nod at the tray — this is normal and nobody minds.",
+     c:"44.1146,15.2262"},
+    {n:"Maraschino on Kalelarga", sp:"Maraschino, cold", pr:"€6 a shot · €20 a bottle", dur:15, leg:3,
+     d:"Distilled from marasca cherries with the stones and leaves in, and turned into an industry here by Girolamo Luxardo in 1821. Both surviving houses trace back to this one street.",
+     o:"A shot, cold, standing at the counter. Then the straw-wrapped bottle if it agrees with you.",
+     x:"The straw jacket is the traditional packaging and it also means the bottle survives a suitcase.",
+     c:"44.1152,15.2253"},
+    {n:"Kavana Danica", sp:"Coffee and a slice", pr:"€4–7", dur:30, leg:9,
+     d:"Zadar takes coffee slowly and in public. An hour over a single cup is standard practice and nobody will come to move you on.",
+     o:"A macchiato and whatever is under the glass dome — rafioli if they have them.",
+     x:"Terrace on Kalelarga, waiter service, so allow the time rather than fighting it.",
+     c:"44.1152,15.2251"},
+    {n:"The riva kiosks & the Sea Organ", sp:"Ice cream at sunset", pr:"€2–4", dur:40, leg:0,
+     d:"Buy an ice cream on the promenade and carry it to the marble steps, which are playing themselves off the swell. This is the last thing to do in Zadar and the reason to hold the ship until dark.",
+     o:"Anything with figs, or with maraschino cherry, which is this city in a cone.",
+     x:"Mid-September sunset is around 19:15. Sit low on the steps with your back to the town, and wait for a ferry wake.",
+     c:"44.1192,15.2225"}
   ],
   buy:[
     {n:"Maraschino", d:"Luxardo and Maraska both trace to Zadar. The traditional straw-wrapped bottle is the one worth carrying.", c:"44.1152,15.2255"},
@@ -792,6 +958,34 @@ const PORTS = [
     {n:"Cantina Klet", t:"Wine bar", d:"On Trg 1. Maja. Wine from the barrel in plastic cups, cheese and prosciutto plates, no pretension whatever.", c:"45.5289,13.5690"},
     {n:"Ivo", t:"Waterfront", d:"On the promenade toward the point. Straightforward grilled fish with a sea table.", c:"45.5290,13.5665"}
   ],
+  tasteNote:"Piran is Slovenia's Italian coast, with fifty kilometres of Istrian olive groves behind it and seven hundred years of salt pans in front. Almost everything worth eating here is fried, poured out of a barrel, or made of salt — and the whole tour fits inside four hundred metres.",
+  taste:[
+    {n:"Fritolin pri Cantini", sp:"Fried calamari in a paper cone", pr:"€7–12", dur:25, leg:1,
+     d:"Order at a hatch on Prvomajski trg, take a number, eat on a bench in the square. A fritolin was the Venetian fry shop, and this is the last honest one left on the coast.",
+     o:"Calamari, or a cone of small fried fish. Salt from the pans down the road, lemon, and nothing else on it.",
+     x:"Cash and card. Queues hard at lunch — go at 11:30. Reduced days outside the season.",
+     c:"45.5289,13.5691"},
+    {n:"Cantina Klet", sp:"Barrel wine, pršut and cheese", pr:"€2 a glass", dur:25, leg:2,
+     d:"Six steps across the same square. Wine comes out of the barrel into a plastic cup — refošk or malvazija — and costs roughly what a coffee does. There is a plate of prosciutto and cheese and there is no other menu.",
+     o:"A cup of malvazija, a plate of pršut, and the local practice of standing outside in the square with both.",
+     x:"Cash. Shuts early evening, which catches people out.",
+     c:"45.5289,13.5690"},
+    {n:"Piranske Soline", sp:"Flor de sal and salted chocolate", pr:"€6–14", dur:20, leg:4,
+     d:"The producer's own shop. The salt is raked by hand at Sečovlje off a microbial mat that has been deliberately maintained since the 14th century; flor de sal is the crust skimmed from the surface on still evenings, by hand, into a basket.",
+     o:"Taste the flor de sal off the back of your hand first. Then salted chocolate and the salt-flower caramels.",
+     x:"On Tartini Square. This is the real thing — much of the 'Piran salt' in the souvenir shops is not.",
+     c:"45.5281,13.5688"},
+    {n:"Cacao", sp:"Gelato on the waterfront", pr:"€3–5", dur:20, leg:6,
+     d:"Below the square on the seafront, with tables at the water. Slovenia's coast borrowed its ice cream from Italy and then improved the portions.",
+     o:"Salted caramel, which on this particular peninsula is not a marketing decision.",
+     x:"The terrace faces west. It is the sunset seat in Piran and it is not a secret.",
+     c:"45.5279,13.5676"},
+    {n:"Pri Mari", sp:"One plate, sitting down", pr:"€18–30", dur:60, leg:0,
+     d:"Ten minutes round the harbour, run by a couple who cook what the boats landed and what Istria grew. The one meal on this tour worth booking and staying put for.",
+     o:"Whatever the fish of the day is, and Istrian olive oil over everything that will take it.",
+     x:"Small, and the locals fill it. Reserve, or turn up at opening.",
+     c:"45.5265,13.5709"}
+  ],
   buy:[
     {n:"Piran salt & fleur de sel", d:"Hand-raked at Sečovlje on a microbial mat that has been maintained for seven hundred years. Flor de sal is the top grade — buy it from Piranske Soline, the producer's own shop.", c:"45.5281,13.5688"},
     {n:"Salt-pan cosmetics", d:"Brine mud and salt-flower creams from the same pans. Sold at the Lepa Vida shop.", c:"45.5280,13.5690"},
@@ -843,10 +1037,11 @@ const timeKey = (id,which) => "sb." + which + "." + id;
 const KIND = {
   walk:   {t:"Stops",  col:"#131E28"},
   eat:    {t:"Eat",    col:"#8C2F39"},
+  taste:  {t:"Taste",  col:"#4F6B2F"},
   buy:    {t:"Buy",    col:"#1D5A6E"},
   screen: {t:"Screen", col:"#8A6B1F"}
 };
-const layers = {walk:true, eat:true, buy:true, screen:true};
+const layers = {walk:true, eat:true, taste:true, buy:true, screen:true};
 let fitAll = false;
 let sel = null;                 /* "walk:3" */
 const TOWN_KM = 1.5;            /* anything further is plotted off-chart */
@@ -894,6 +1089,9 @@ function points(p){
     {k:"walk", i, num:i+1, n:s.n, c:s.c, sub:s.dur+" min", d:s.w, x:s.x}));
   (p.eat||[]).forEach((s,i) => out.push(
     {k:"eat", i, num:i+1, n:s.n, c:s.c, sub:"", tag:s.t, d:s.d}));
+  (p.taste||[]).forEach((s,i) => out.push(
+    {k:"taste", i, num:i+1, n:s.n, c:s.c, sub:s.sp + " · " + s.pr, tag:"Food tour " + (i+1),
+     d:s.d, x:s.o + (s.x ? " " + s.x : "")}));
   (p.buy||[]).forEach((s,i) => out.push(
     {k:"buy", i, num:i+1, n:s.n, c:s.c, sub:"", d:s.d}));
   (p.screen||[]).forEach((s,i) => out.push(
@@ -989,6 +1187,40 @@ function renderWalk(){
           esc(p.stops[i+1].n) + '</div>' : '') +
       '</div></li>';
   }).join("") + '</ol>';
+
+  return out;
+}
+
+/* ============================================================
+   RENDER — the food tour. Same rail as the walk, but there is
+   nothing to tick off: you either ate it or you did not.
+   ============================================================ */
+function renderTaste(){
+  const p = port(), t = p.taste || [];
+  if(!t.length) return '<p class="sec-note">Nothing listed for this port.</p>';
+
+  const total = t.reduce((a,s,i) => a + s.dur + (i < t.length-1 ? s.leg : 0), 0);
+  let out = '<div class="proj"><b>The food tour</b>' + esc(p.tasteNote) +
+    ' End to end it runs <strong>' + hhmm(total) + '</strong> including the walking between, ' +
+    'and it drops in and out at any stop.</div>';
+
+  out += '<ol class="rail">' + t.map((s,i) =>
+    '<li class="stop taste" data-i="' + i + '">' +
+      '<span class="dot static" aria-hidden="true">' + (i+1) + '</span>' +
+      '<div class="stop-head" data-open="' + i + '">' +
+        '<span class="stop-name">' + esc(s.sp) +
+          '<span class="stop-where">' + esc(s.n) + '</span></span>' +
+        '<span class="stop-dur">' + s.dur + ' min<em>' + esc(s.pr) + '</em></span>' +
+      '</div>' +
+      '<div class="stop-body">' +
+        '<p>' + esc(s.d) + '</p>' +
+        '<div class="look ord"><b>Order</b>' + esc(s.o) + '</div>' +
+        (s.x ? '<p style="margin-top:8px;color:var(--mute);font-size:13.5px">' + esc(s.x) + '</p>' : '') +
+        '<a class="geo" href="' + mapsHref(s.c, s.n) + '">' + s.c + ' · Maps</a>' +
+        '<button class="geo btn" data-goto="taste:' + i + '">On chart</button>' +
+        (i < t.length-1 ? '<div class="leg">&darr; ' + s.leg + ' min walk to ' +
+          esc(t[i+1].n) + '</div>' : '') +
+      '</div></li>').join("") + '</ol>';
 
   return out;
 }
@@ -1331,12 +1563,17 @@ function drawChart(){
              '" text-anchor="middle" class="tk">' + v.toFixed(dec(lonStep)) + '</text>';
   }
 
-  /* walking route */
+  /* walking route, and the food tour's own line under it */
   let route = "";
   const walk = shown.filter(o => o.k==="walk").sort((a,b)=>a.i-b.i);
   if(walk.length > 1){
     route = '<polyline class="route" points="' +
       walk.map(o => SX(px(o)).toFixed(1) + "," + SY(py(o)).toFixed(1)).join(" ") + '"/>';
+  }
+  const tour = shown.filter(o => o.k==="taste").sort((a,b)=>a.i-b.i);
+  if(tour.length > 1){
+    route += '<polyline class="route taste" points="' +
+      tour.map(o => SX(px(o)).toFixed(1) + "," + SY(py(o)).toFixed(1)).join(" ") + '"/>';
   }
 
   /* de-collide markers, keeping a leader to the true spot */
@@ -1510,6 +1747,13 @@ function drawOverlay(){
       return q.x.toFixed(1)+","+q.y.toFixed(1);
     }).join(" ") + '"/>';
   }
+  const tour = shown.filter(o => o.k==="taste").sort((a,b)=>a.i-b.i);
+  if(tour.length > 1){
+    route += '<polyline class="route taste" points="' + tour.map(o => {
+      const q = proj.toXY(o.ll.lat, o.ll.lon);
+      return q.x.toFixed(1)+","+q.y.toFixed(1);
+    }).join(" ") + '"/>';
+  }
   const pins = shown.map(o => {
     const q = proj.toXY(o.ll.lat, o.ll.lon);
     return (q.x > -30 && q.x < proj.W+30 && q.y > -30 && q.y < proj.H+30)
@@ -1522,16 +1766,17 @@ function drawOverlay(){
 function pinSVG(o, x, y){
   const k = keyOf(o), col = KIND[o.k].col;
   let shape;
-  if(o.k === "walk")      shape = '<circle r="9.6" fill="' + col + '"/>';
-  else if(o.k === "eat")  shape = '<rect x="-8.4" y="-8.4" width="16.8" height="16.8" fill="' + col + '"/>';
-  else if(o.k === "buy")  shape = '<rect x="-8" y="-8" width="16" height="16" transform="rotate(45)" fill="' + col + '"/>';
-  else                    shape = '<circle r="9.8" fill="' + col + '"/>' +
-                                  '<circle r="7.2" fill="none" stroke="#FBFAF6" stroke-width="1"/>';
+  if(o.k === "walk")       shape = '<circle r="9.6" fill="' + col + '"/>';
+  else if(o.k === "eat")   shape = '<rect x="-8.4" y="-8.4" width="16.8" height="16.8" fill="' + col + '"/>';
+  else if(o.k === "taste") shape = '<polygon points="0,-11.5 10.5,7 -10.5,7" fill="' + col + '"/>';
+  else if(o.k === "buy")   shape = '<rect x="-8" y="-8" width="16" height="16" transform="rotate(45)" fill="' + col + '"/>';
+  else                     shape = '<circle r="9.8" fill="' + col + '"/>' +
+                                   '<circle r="7.2" fill="none" stroke="#FBFAF6" stroke-width="1"/>';
   return '<g class="pin' + (sel===k ? " on" : "") + '" data-pin="' + k +
     '" transform="translate(' + x.toFixed(1) + ',' + y.toFixed(1) + ')" role="button" ' +
     'tabindex="0" aria-label="' + esc(o.n) + '">' +
     '<circle class="halo" r="15"/>' + shape +
-    '<text y="3.3" text-anchor="middle">' + o.num + '</text></g>';
+    '<text y="' + (o.k === "taste" ? "5.4" : "3.3") + '" text-anchor="middle">' + o.num + '</text></g>';
 }
 
 /* ============================================================
@@ -1724,6 +1969,7 @@ function renderPanel(){
   const p = port();
   if(tab === "walk")        $("#panel").innerHTML = renderWalk();
   else if(tab === "eat")    $("#panel").innerHTML = renderCards("eat");
+  else if(tab === "taste")  $("#panel").innerHTML = renderTaste();
   else if(tab === "buy")    $("#panel").innerHTML = renderCards("buy");
   else if(tab === "screen") $("#panel").innerHTML = renderCards("screen",
     "What was filmed here, and what only pretends to have been. Everything below is a real location you can stand on unless the card says otherwise.");
