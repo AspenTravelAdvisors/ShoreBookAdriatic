@@ -1,6 +1,6 @@
 /* Shore Book — offline cache.
    Bump CACHE when you edit index.html, or the phone keeps the old copy. */
-const CACHE = "shore-book-v6";
+const CACHE = "shore-book-v7";
 const TILES = "shore-tiles-v1";
 const TILE_HOSTS = ["tile.openstreetmap.org"];
 const TILE_MAX = 400;          /* keep the map you have actually looked at, no more */

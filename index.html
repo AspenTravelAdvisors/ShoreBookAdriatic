@@ -271,6 +271,55 @@ body.fsmap{overflow:hidden}
 .locnote strong{color:var(--sea);font-weight:400}
 .locnote.warn{color:var(--rosso)}
 .fromhere{font-family:var(--mono);font-size:10.5px;color:var(--sea)}
+
+/* ---------- proximity buzz ---------- */
+.buzzkey{display:flex;flex-wrap:wrap;gap:6px;margin:-2px 0 10px;align-items:center}
+.bzrow{
+  border:1px solid var(--rule);background:transparent;cursor:pointer;padding:4px 7px;
+  display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9.5px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--mute);
+}
+.bzrow[data-off="true"]{opacity:.38}
+.bzrow:focus-visible{outline:2px solid var(--sea);outline-offset:2px}
+.bzpat{display:inline-flex;align-items:center;gap:2px;height:8px}
+.bzpat i{display:block;height:8px;border-radius:1px;background:var(--ink)}
+.bzpat.k-eat i{background:var(--rosso)}
+.bzpat.k-taste i{background:var(--olio)}
+.bzpat.k-buy i{background:var(--sea)}
+.bzpat.k-screen i{background:var(--reel)}
+.bzr{color:var(--sea);text-transform:none}
+.buzznote{font-family:var(--mono);font-size:9.5px;letter-spacing:.05em;color:var(--mute);
+  flex:1 0 100%;margin:0;line-height:1.55}
+.buzznote.warn{color:var(--rosso)}
+
+/* the hail — a buzz is silent, and an iPhone will not vibrate from a web page at all,
+   so every trigger also shows itself */
+.hail{position:fixed;left:0;right:0;bottom:0;z-index:120;display:flex;justify-content:center;
+  padding:0 14px calc(14px + env(safe-area-inset-bottom));pointer-events:none}
+.hail-in{
+  pointer-events:auto;display:flex;gap:10px;align-items:flex-start;width:100%;max-width:560px;
+  background:var(--sand);border:1px solid var(--ink);border-left-width:4px;
+  padding:10px 11px;box-shadow:3px 3px 0 rgba(19,30,40,.18);animation:hailup .26s ease;
+}
+.hail-in.k-walk{border-left-color:var(--ink)}
+.hail-in.k-eat{border-left-color:var(--rosso)}
+.hail-in.k-taste{border-left-color:var(--olio)}
+.hail-in.k-buy{border-left-color:var(--sea)}
+.hail-in.k-screen{border-left-color:var(--reel)}
+@keyframes hailup{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.hail-in{animation:none}}
+.hail-body{flex:1;min-width:0}
+.hail-kick{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--mute);display:block}
+.hail-name{font-family:var(--display);font-size:18px;line-height:1.15;display:block;margin-top:2px}
+.hail-sub{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--sea);
+  display:block;margin-top:3px}
+.hail-go{background:none;border:0;border-bottom:1px solid var(--sea-tint);color:var(--sea);
+  font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  padding:0;margin-top:7px;cursor:pointer}
+.hail-x{background:none;border:0;color:var(--mute);font:14px/1 var(--mono);cursor:pointer;
+  padding:2px 0 2px 6px;flex:0 0 auto}
+.hail-x:focus-visible,.hail-go:focus-visible{outline:2px solid var(--sea);outline-offset:2px}
 #me{pointer-events:none}   /* never let the blue dot swallow a tap on a pin */
 .me-acc{fill:#1D5A6E;fill-opacity:.13;stroke:#1D5A6E;stroke-width:.6;stroke-opacity:.45}
 .me-dot{fill:#1D5A6E;stroke:#FBFAF6;stroke-width:2}
@@ -1304,9 +1353,11 @@ function startGeo(){
 function stopGeo(){
   try{ if(geo.id != null) navigator.geolocation.clearWatch(geo.id); }catch(e){}
   geo.id = null; geo.on = false; geo.fix = null; geo.err = null;
+  buzz.near = {}; buzz.loose = false; clearTimeout(buzz.retry); buzz.retry = 0; clearHail();
   store.del("sb.geo"); onFix();
 }
 function onFix(){
+  checkProximity();          /* runs on every tab — the phone is usually in a pocket */
   if(tab !== "chart") return;
   paintLocBar();
   if(mode === "map" && geo.fix && followMe) centreOn(geo.fix.lat, geo.fix.lon);
@@ -1320,6 +1371,122 @@ function nearestTo(fix){
     if(!best || d < best.km) best = {o, L, km:d};
   });
   return best;
+}
+
+/* ============================================================
+   PROXIMITY BUZZ — the phone taps your leg when something comes
+   within reach, in a rhythm that tells you what kind of thing it is,
+   so you can keep your eyes on the street and the phone in a pocket.
+   A buzz is silent and invisible, and an iPhone will not vibrate from
+   a web page at all, so every hail also raises a card on the screen.
+   ============================================================ */
+const BUZZ = {
+  walk:   {r:60, pat:[420]},                 /* one long   — a stop on the walk   */
+  eat:    {r:45, pat:[90,80,90]},            /* two short  — a kitchen            */
+  taste:  {r:45, pat:[60,60,60,60,60]},      /* three quick— a food-tour counter  */
+  buy:    {r:40, pat:[70,90,260]},           /* short-long — a shop               */
+  screen: {r:55, pat:[260,90,80,90,260]}     /* clapper    — a filming location   */
+};
+const LEAVE   = 1.7;      /* how far out of the ring you must walk before it can hail again */
+const ACC_MAX = 90;       /* a fix looser than this cannot tell 40 m from 400 */
+const HAIL_GAP = 5000;    /* never two hails on top of each other */
+const HAIL_HOLD = 12000;  /* how long the card stays up */
+
+const buzz = {
+  on: store.get("sb.buzz") !== "0",   /* on by default — it does nothing until location is */
+  near: {},                           /* key -> true while you are still inside the ring   */
+  last: 0,
+  timer: 0,
+  retry: 0,
+  loose: false                        /* standing still on a fix too loose to trust        */
+};
+const canVibrate = () => typeof navigator.vibrate === "function";
+function fire(pat){
+  if(!canVibrate()) return false;
+  try{ return navigator.vibrate(pat); }catch(e){ return false; }
+}
+
+/* The watch only speaks when you move, so a hail held back for any reason has to
+   ask to be looked at again — otherwise standing still is the same as being told
+   nothing at all. */
+function recheckIn(ms){
+  clearTimeout(buzz.retry);
+  buzz.retry = setTimeout(() => { buzz.retry = 0; checkProximity(); }, ms);
+}
+
+/* Returns true when it actually hailed. */
+function checkProximity(){
+  clearTimeout(buzz.retry); buzz.retry = 0;
+  const was = buzz.loose; buzz.loose = false;
+  const note = () => { if(was !== buzz.loose && tab === "chart") paintBuzzKey(); };
+  if(!buzz.on || !geo.on || !geo.fix){ note(); return false; }
+  const fix = geo.fix;
+  if(fix.acc > ACC_MAX){                  /* keep the rings armed, just do not trust this fix */
+    buzz.loose = true; note(); return false;
+  }
+  note();
+
+  const done = getDone();
+  let hit = null;
+  plotted(port()).forEach(o => {
+    const cfg = BUZZ[o.k]; if(!cfg) return;
+    const k = keyOf(o), L = ll(o.c), m = kmBetween(fix, L)*1000;
+    if(buzz.near[k]){ if(m > cfg.r*LEAVE) delete buzz.near[k]; return; }
+    if(!layers[o.k]) return;                              /* layer off — no hail  */
+    if(o.k === "walk" && done.includes(o.i)) return;      /* stop already ticked  */
+    if(m <= cfg.r && (!hit || m < hit.m)) hit = {o, L, m, cfg, k};
+  });
+  if(!hit) return false;
+
+  const t = Date.now();
+  if(t - buzz.last < HAIL_GAP){                /* one hail at a time — come back for this one */
+    recheckIn(HAIL_GAP - (t - buzz.last) + 60);
+    return false;
+  }
+  buzz.last = t;
+  buzz.near[hit.k] = true;                     /* armed again only once you walk back out  */
+  fire(hit.cfg.pat);
+  showHail(hit);
+  recheckIn(HAIL_GAP + 60);      /* two pins on one corner get one hail each, in turn */
+  return true;
+}
+
+/* Native full screen paints nothing outside the element that asked for it, so the
+   card has to live inside the map while the map has the screen to itself. */
+function hailHome(){
+  let host = $("#hail");
+  if(!host){
+    host = document.createElement("div");
+    host.className = "hail"; host.id = "hail";
+    host.setAttribute("role", "status");
+    host.setAttribute("aria-live", "polite");
+  }
+  const parent = fsElement() || document.body;
+  if(host.parentNode !== parent) parent.appendChild(host);
+  return host;
+}
+function rehomeHail(){ if($("#hail")) hailHome(); }
+
+function showHail(h){
+  const o = h.o;
+  const host = hailHome();
+  host.innerHTML =
+    '<div class="hail-in k-' + o.k + '">' + glyph(o.k, o.num) +
+      '<div class="hail-body">' +
+        '<span class="hail-kick">' + esc(KIND[o.k].t) + ' &middot; within reach</span>' +
+        '<span class="hail-name">' + esc(o.n) + '</span>' +
+        '<span class="hail-sub">' + Math.round(h.m) + ' m ' + compass(geo.fix, h.L) +
+          (o.sub ? ' &middot; ' + esc(o.sub) : '') + '</span>' +
+        '<button class="hail-go" data-goto="' + h.k + '">Show on map</button>' +
+      '</div>' +
+      '<button class="hail-x" data-hailx="1" aria-label="Dismiss">&times;</button>' +
+    '</div>';
+  clearTimeout(buzz.timer);
+  buzz.timer = setTimeout(clearHail, HAIL_HOLD);
+}
+function clearHail(){
+  clearTimeout(buzz.timer);
+  const h = $("#hail"); if(h) h.remove();
 }
 
 /* ============================================================
@@ -1387,6 +1554,7 @@ function chartShell(){
   '</div>';
 
   html += '<div class="locbar" id="locbar"></div>';
+  html += '<div class="buzzkey" id="buzzkey"></div>';
   html += '<div class="viewbox ' + mode + (mode==="map" && mapFull ? ' fs' : '') +
           '" id="viewbox"></div>';
   html += '<div id="chartCard"></div>';
@@ -1434,27 +1602,54 @@ function drawView(){
    ============================================================ */
 function paintLocBar(){
   const bar = $("#locbar"); if(!bar) return;
-  let html;
+  let btns, note;
   if(!geo.on){
-    html = '<button class="lay" data-geo="on">Show where I am</button>' +
-      '<span class="locnote">The phone\'s own GPS. It works with no signal.</span>';
+    btns = '<button class="lay" data-geo="on">Show where I am</button>';
+    note = '<span class="locnote">The phone\'s own GPS. It works with no signal.</span>';
   } else if(geo.err){
-    html = '<button class="lay" data-geo="off" aria-pressed="true">Location on</button>' +
-      '<span class="locnote warn">' + esc(geo.err) + '</span>';
+    btns = '<button class="lay" data-geo="off" aria-pressed="true">Location on</button>';
+    note = '<span class="locnote warn">' + esc(geo.err) + '</span>';
   } else if(!geo.fix){
-    html = '<button class="lay" data-geo="off" aria-pressed="true">Location on</button>' +
-      '<span class="locnote">Waiting for a fix…</span>';
+    btns = '<button class="lay" data-geo="off" aria-pressed="true">Location on</button>';
+    note = '<span class="locnote">Waiting for a fix…</span>';
   } else {
     const n = nearestTo(geo.fix);
-    html = '<button class="lay" data-geo="off" aria-pressed="true">Location on</button>' +
+    btns = '<button class="lay" data-geo="off" aria-pressed="true">Location on</button>' +
       (mode === "map"
         ? '<button class="lay" data-geo="follow" aria-pressed="' + followMe + '">Follow</button>'
-        : '') +
-      '<span class="locnote">&plusmn;' + Math.round(geo.fix.acc) + ' m' +
+        : '');
+    note = '<span class="locnote">&plusmn;' + Math.round(geo.fix.acc) + ' m' +
         (n ? ' &middot; nearest ' + esc(n.o.n) + ' <strong>' + dist(n.km) + ' ' +
              compass(geo.fix, n.L) + '</strong>' : '') + '</span>';
   }
-  bar.innerHTML = html;
+  if(geo.on) btns += '<button class="lay" data-buzz="1" aria-pressed="' + buzz.on + '">' +
+    (canVibrate() ? "Buzz" : "Hail") + ' near</button>';
+  bar.innerHTML = btns + note;
+  paintBuzzKey();
+}
+
+/* the rhythms, drawn as they are felt — and tappable, so you can learn them
+   before you need them (a tap is also the gesture some browsers want before
+   they will vibrate at all) */
+function paintBuzzKey(){
+  const el = $("#buzzkey"); if(!el) return;
+  if(!geo.on || !buzz.on){ el.innerHTML = ""; return; }
+  el.innerHTML = Object.keys(BUZZ).map(k => {
+    const bars = BUZZ[k].pat.filter((v,i) => i % 2 === 0)
+      .map(ms => '<i style="width:' + Math.max(3, Math.round(ms/26)) + 'px"></i>').join("");
+    return '<button class="bzrow" data-bztest="' + k + '" data-off="' + !layers[k] + '"' +
+      ' aria-label="' + esc(KIND[k].t) + ', ' + BUZZ[k].r + ' metres' +
+      (layers[k] ? '' : ' — layer switched off, it will not hail you') + '. Tap to feel the rhythm.">' +
+      '<span class="bzpat k-' + k + '">' + bars + '</span>' + esc(KIND[k].t) +
+      ' <span class="bzr">' + BUZZ[k].r + '&thinsp;m</span></button>';
+  }).join("") +
+  '<p class="buzznote' + (buzz.loose ? ' warn' : '') + '">' + (buzz.loose
+    ? "Fix is loose to &plusmn;" + Math.round(geo.fix.acc) + " m — too vague to say you are at a door. " +
+      "Nothing will buzz until it tightens."
+    : canVibrate()
+    ? "Tap a rhythm to feel it. Each pin hails you once; walk out and back to be hailed again. Layers switched off stay quiet."
+    : "This browser will not vibrate — no iPhone does from a web page. Pins hail you on screen instead.") +
+  '</p>';
 }
 
 /* ============================================================
@@ -1927,7 +2122,7 @@ function exitMapFull(){
 
 /* the browser can drop out of fullscreen on its own — Esc, a swipe, a navigation */
 ["fullscreenchange","webkitfullscreenchange"].forEach(ev =>
-  document.addEventListener(ev, () => { if(!fsElement()) exitMapFull(); }));
+  document.addEventListener(ev, () => { if(!fsElement()) exitMapFull(); rehomeHail(); }));
 
 /* Esc gets us out either way — the browser handles native fullscreen itself,
    the overlay has nobody else to do it */
@@ -2009,6 +2204,7 @@ function renderAll(){
 document.addEventListener("click", e => {
   const pb = e.target.closest("[data-port]");
   if(pb){ exitMapFull(); cur = pb.dataset.port; sel = null; mapView = null; followMe = false;
+    buzz.near = {}; clearHail();      /* pin keys repeat from port to port */
     store.set("sb.port", cur); renderAll(); window.scrollTo(0,0); return; }
 
   const tb = e.target.closest(".tab");
@@ -2051,6 +2247,20 @@ document.addEventListener("click", e => {
       paintLocBar(); }
     return; }
 
+  const bz = e.target.closest("[data-buzz]");
+  if(bz){
+    buzz.on = !buzz.on; store.set("sb.buzz", buzz.on ? "1" : "0");
+    if(buzz.on){ buzz.near = {}; buzz.last = 0; if(!checkProximity()) fire([40]); }
+    else { clearTimeout(buzz.retry); buzz.retry = 0; clearHail(); }
+    paintLocBar(); return;
+  }
+
+  const bt = e.target.closest("[data-bztest]");
+  if(bt){ const cfg = BUZZ[bt.dataset.bztest]; if(cfg) fire(cfg.pat); return; }
+
+  const hx = e.target.closest("[data-hailx]");
+  if(hx){ clearHail(); return; }
+
   const gp = e.target.closest("[data-gpx]");
   if(gp){ const p = port();
     download("shore-book-" + p.id + ".gpx", gpxFor(p), "application/gpx+xml"); return; }
@@ -2062,7 +2272,7 @@ document.addEventListener("click", e => {
     return; }
 
   const go = e.target.closest("[data-goto]");
-  if(go){ const k = go.dataset.goto;
+  if(go){ const k = go.dataset.goto; clearHail();
     if(tab === "chart"){ selectPin(k, true); }
     else { sel = k; tab = "chart"; renderAll();
       if(mode === "map") selectPin(k, true);
