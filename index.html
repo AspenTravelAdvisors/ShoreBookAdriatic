@@ -288,6 +288,11 @@ body.fsmap{overflow:hidden}
 .bzpat.k-buy i{background:var(--sea)}
 .bzpat.k-screen i{background:var(--reel)}
 .bzr{color:var(--sea);text-transform:none}
+/* the borrowed iOS haptic — it has to be laid out to fire at all, so it is
+   hidden by size and opacity rather than by display:none */
+.haptic-switch{position:fixed;left:0;bottom:0;width:1px;height:1px;overflow:hidden;
+  opacity:.01;pointer-events:none;z-index:-1;margin:0}
+.haptic-switch input{margin:0;width:1px;height:1px;transform:scale(.02);transform-origin:0 0}
 .buzznote{font-family:var(--mono);font-size:9.5px;letter-spacing:.05em;color:var(--mute);
   flex:1 0 100%;margin:0;line-height:1.55}
 .buzznote.warn{color:var(--rosso)}
@@ -1380,12 +1385,16 @@ function nearestTo(fix){
    A buzz is silent and invisible, and an iPhone will not vibrate from
    a web page at all, so every hail also raises a card on the screen.
    ============================================================ */
+/* One rhythm per kind, in milliseconds: sound, pause, sound, pause…  The same
+   array drives all three channels, so the key drawn under the bar is honest
+   whichever one your phone happens to have.  The pitches are a plain pentatonic
+   — no two adjacent, so they stay apart in a noisy calle. */
 const BUZZ = {
-  walk:   {r:60, pat:[420]},                 /* one long   — a stop on the walk   */
-  eat:    {r:45, pat:[90,80,90]},            /* two short  — a kitchen            */
-  taste:  {r:45, pat:[60,60,60,60,60]},      /* three quick— a food-tour counter  */
-  buy:    {r:40, pat:[70,90,260]},           /* short-long — a shop               */
-  screen: {r:55, pat:[260,90,80,90,260]}     /* clapper    — a filming location   */
+  walk:   {r:60, pat:[420],                hz:392.00},  /* one long    — a stop on the walk  */
+  eat:    {r:45, pat:[90,80,90],           hz:587.33},  /* two short   — a kitchen           */
+  taste:  {r:45, pat:[60,60,60,60,60],     hz:783.99},  /* three quick — a food-tour counter */
+  buy:    {r:40, pat:[70,90,260],          hz:440.00},  /* short, long — a shop              */
+  screen: {r:55, pat:[260,90,80,90,260],   hz:659.25}   /* clapper     — a filming location  */
 };
 const LEAVE   = 1.7;      /* how far out of the ring you must walk before it can hail again */
 const ACC_MAX = 90;       /* a fix looser than this cannot tell 40 m from 400 */
@@ -1400,10 +1409,92 @@ const buzz = {
   retry: 0,
   loose: false                        /* standing still on a fix too loose to trust        */
 };
+const sound = {on: store.get("sb.sound") === "1", ctx:null};   /* off until asked for */
+
+/* --- channel 1: real vibration. Android has it; no iPhone does. ------------ */
 const canVibrate = () => typeof navigator.vibrate === "function";
 function fire(pat){
   if(!canVibrate()) return false;
   try{ return navigator.vibrate(pat); }catch(e){ return false; }
+}
+
+/* --- channel 2: the only tap an iPhone will give a web page ----------------
+   Safari 17.4 draws <input type="checkbox" switch> as the native iOS toggle,
+   and flipping one fires the system haptic. Borrowing it is undocumented and
+   Apple may close it in any release, so it is a bonus, never the plan: one
+   tap per beat of the rhythm, and the sound and the card carry the meaning. */
+let swEl = null;
+const canSwitch = () => {
+  try{ return "switch" in document.createElement("input"); }catch(e){ return false; }
+};
+/* the input itself, not its label — clicking a label forwards a second click to
+   the control, which would spend two haptics on every beat */
+function switchEl(){
+  if(swEl && swEl.isConnected) return swEl;
+  const l = document.createElement("span");
+  l.className = "haptic-switch";
+  l.setAttribute("aria-hidden", "true");
+  const i = document.createElement("input");
+  i.type = "checkbox"; i.tabIndex = -1;
+  try{ i.setAttribute("switch", ""); }catch(e){}
+  l.appendChild(i);
+  document.body.appendChild(l);
+  swEl = i;
+  return i;
+}
+function tapSwitch(pat){
+  if(!canSwitch()) return false;
+  const el = switchEl();
+  let t = 0;
+  for(let i = 0; i < pat.length; i += 2){
+    setTimeout(() => { try{ el.click(); }catch(e){} }, t);
+    t += pat[i] + (pat[i+1] || 0);
+  }
+  return true;
+}
+
+/* --- channel 3: a tone, for the phones that will do neither ---------------- */
+function audioCtx(){
+  if(sound.ctx) return sound.ctx;
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if(!AC) return null;
+  try{ sound.ctx = new AC(); }catch(e){ return null; }
+  return sound.ctx;
+}
+const canSound = () => !!(window.AudioContext || window.webkitAudioContext);
+/* iOS starts every context asleep and only a real finger may wake it */
+function unlockAudio(){
+  if(!sound.on) return;
+  const c = audioCtx();
+  if(c && c.state === "suspended"){ try{ c.resume(); }catch(e){} }
+}
+function chime(k){
+  const c = audioCtx(); if(!c) return false;
+  if(c.state === "suspended"){ try{ c.resume(); }catch(e){} }
+  const pat = BUZZ[k].pat, hz = BUZZ[k].hz;
+  let t = c.currentTime + 0.02;
+  for(let i = 0; i < pat.length; i += 2){
+    const dur = Math.max(0.05, pat[i]/1000);
+    const osc = c.createOscillator(), g = c.createGain();
+    osc.type = "sine";
+    osc.frequency.value = hz;
+    g.gain.setValueAtTime(0.0001, t);                      /* a ramp, or it clicks */
+    g.gain.exponentialRampToValueAtTime(0.20, t + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.connect(g); g.connect(c.destination);
+    osc.start(t); osc.stop(t + dur + 0.03);
+    t += dur + (pat[i+1] || 0)/1000;
+  }
+  return true;
+}
+
+/* Every channel this phone has, at once. Returns true if anything was felt. */
+function signal(k){
+  const pat = BUZZ[k].pat;
+  let felt = fire(pat);
+  if(!felt) felt = tapSwitch(pat);
+  if(sound.on) chime(k);
+  return felt || sound.on;
 }
 
 /* The watch only speaks when you move, so a hail held back for any reason has to
@@ -1445,7 +1536,7 @@ function checkProximity(){
   }
   buzz.last = t;
   buzz.near[hit.k] = true;                     /* armed again only once you walk back out  */
-  fire(hit.cfg.pat);
+  signal(hit.o.k);
   showHail(hit);
   recheckIn(HAIL_GAP + 60);      /* two pins on one corner get one hail each, in turn */
   return true;
@@ -1622,8 +1713,12 @@ function paintLocBar(){
         (n ? ' &middot; nearest ' + esc(n.o.n) + ' <strong>' + dist(n.km) + ' ' +
              compass(geo.fix, n.L) + '</strong>' : '') + '</span>';
   }
-  if(geo.on) btns += '<button class="lay" data-buzz="1" aria-pressed="' + buzz.on + '">' +
-    (canVibrate() ? "Buzz" : "Hail") + ' near</button>';
+  if(geo.on){
+    btns += '<button class="lay" data-buzz="1" aria-pressed="' + buzz.on + '">' +
+      (canVibrate() ? "Buzz" : "Hail") + ' near</button>';
+    if(buzz.on && canSound())
+      btns += '<button class="lay" data-sound="1" aria-pressed="' + sound.on + '">Sound</button>';
+  }
   bar.innerHTML = btns + note;
   paintBuzzKey();
 }
@@ -1646,10 +1741,20 @@ function paintBuzzKey(){
   '<p class="buzznote' + (buzz.loose ? ' warn' : '') + '">' + (buzz.loose
     ? "Fix is loose to &plusmn;" + Math.round(geo.fix.acc) + " m — too vague to say you are at a door. " +
       "Nothing will buzz until it tightens."
-    : canVibrate()
-    ? "Tap a rhythm to feel it. Each pin hails you once; walk out and back to be hailed again. Layers switched off stay quiet."
-    : "This browser will not vibrate — no iPhone does from a web page. Pins hail you on screen instead.") +
+    : howItHails()) +
   '</p>';
+}
+
+/* Say what this particular phone will actually do — no phone does all of it */
+function howItHails(){
+  const tail = " Each pin hails once; walk out and back to be hailed again. " +
+               "Layers switched off stay quiet.";
+  if(canVibrate())
+    return "Tap a rhythm to feel it." + tail;
+  if(canSwitch())
+    return "No iPhone vibrates from a web page. This one borrows Safari&rsquo;s switch haptic — " +
+           "one tap a beat, and Apple may take it back, so turn Sound on for the whole rhythm." + tail;
+  return "This browser will neither vibrate nor tap. Turn Sound on, or watch for the card." + tail;
 }
 
 /* ============================================================
@@ -2202,6 +2307,8 @@ function renderAll(){
    EVENTS
    ============================================================ */
 document.addEventListener("click", e => {
+  unlockAudio();   /* iOS wakes the audio clock for a finger and nothing else */
+
   const pb = e.target.closest("[data-port]");
   if(pb){ exitMapFull(); cur = pb.dataset.port; sel = null; mapView = null; followMe = false;
     buzz.near = {}; clearHail();      /* pin keys repeat from port to port */
@@ -2250,13 +2357,21 @@ document.addEventListener("click", e => {
   const bz = e.target.closest("[data-buzz]");
   if(bz){
     buzz.on = !buzz.on; store.set("sb.buzz", buzz.on ? "1" : "0");
-    if(buzz.on){ buzz.near = {}; buzz.last = 0; if(!checkProximity()) fire([40]); }
+    if(buzz.on){ buzz.near = {}; buzz.last = 0; unlockAudio();
+      if(!checkProximity()){ fire([40]); tapSwitch([40]); } }
     else { clearTimeout(buzz.retry); buzz.retry = 0; clearHail(); }
     paintLocBar(); return;
   }
 
+  const sd = e.target.closest("[data-sound]");
+  if(sd){
+    sound.on = !sound.on; store.set("sb.sound", sound.on ? "1" : "0");
+    if(sound.on){ unlockAudio(); chime("walk"); }   /* a note, so you know the volume */
+    paintLocBar(); return;
+  }
+
   const bt = e.target.closest("[data-bztest]");
-  if(bt){ const cfg = BUZZ[bt.dataset.bztest]; if(cfg) fire(cfg.pat); return; }
+  if(bt){ if(BUZZ[bt.dataset.bztest]) signal(bt.dataset.bztest); return; }
 
   const hx = e.target.closest("[data-hailx]");
   if(hx){ clearHail(); return; }
