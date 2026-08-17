@@ -198,6 +198,10 @@ h1{
 .card-title .entry-tag{display:inline-block;margin-top:6px;white-space:normal}
 .card p{margin:7px 0 0;font-size:14px}
 .card .note{color:var(--mute);font-size:13px}
+.card .cue{font-family:var(--mono);font-size:11.5px;line-height:1.55;color:var(--ink);
+  border-left:2px solid var(--reel);background:rgba(138,107,31,.07);padding:6px 9px;margin-top:9px}
+.card .cue b{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--reel);font-weight:400;margin-bottom:3px}
 .card-foot{display:flex;gap:14px;flex-wrap:wrap;align-items:baseline;margin-top:10px;
   font-family:var(--mono);font-size:10.5px}
 .card-foot a,.card-foot button{color:var(--sea);text-decoration:none;border:0;background:none;
@@ -522,26 +526,32 @@ const PORTS = [
   screen:[
     {n:"Campo San Barnaba", f:"Indiana Jones and the Last Crusade", y:"1989", r:"The library",
      d:"The church of San Barnaba is the library Indy walks into looking for the X on the floor. It is deconsecrated and has spent years as an exhibition hall, so the interior you see on screen is not what is behind the door.",
+     q:"About a third in — roughly 0:33 to 0:45 of a 127-minute film. Indy and Marcus land at the campo, the library is the next scene, and it runs straight on into the catacombs and the boat chase. Ten minutes covers the lot.",
      x:"Two minutes from Tonolo. The same campo is where Katharine Hepburn steps backwards into the canal in Summertime (1955) — the fondamenta by the Ponte dei Pugni.",
      c:"45.4334,12.3261"},
     {n:"Piazza San Marco", f:"Moonraker · Spider-Man: Far From Home", y:"1979 · 2019", r:"The set piece",
      d:"Roger Moore drives a gondola-hovercraft across the paving in Moonraker, to the visible disgust of a pigeon. Forty years later the square and the Rialto are drowned by a water elemental in Far From Home.",
+     q:"Moonraker: the Venice act sits around the 40-to-60-minute mark; the gondola comes ashore onto the piazza at the end of the canal chase, and the pigeon does its double-take a few seconds later. Far From Home: opening act, roughly 0:12 to 0:22, ending with the water elemental over the campanile.",
      x:"",
      c:"45.4341,12.3388"},
     {n:"Grand Canal & Rialto Bridge", f:"Casino Royale", y:"2006", r:"Bond's arrival",
      d:"Bond and Vesper sail in past the Doge's Palace and up the Grand Canal — the last quiet ten minutes of the film before the house comes down.",
+     q:"Very late — from about 2:05 of a 144-minute film. Skip to the yacht coming through the basin and let it run to the end; the arrival, the canal and the collapse are one continuous stretch of about twenty minutes.",
      x:"The sinking palazzo was a Pinewood tank set. The water is real, the building is not.",
      c:"45.4380,12.3358"},
     {n:"Campo San Polo", f:"Casino Royale", y:"2006", r:"The foot chase",
      d:"The pursuit that ends in the collapsing house runs through the largest campo in Venice after San Marco. It is usually close to empty, which is exactly why it filmed well.",
+     q:"Same final stretch as the arrival above, a few minutes further on — around 2:12. If you only want the running, start where Vesper walks off with the case.",
      x:"",
      c:"45.4374,12.3282"},
     {n:"San Nicolò dei Mendicoli", f:"Don't Look Now", y:"1973", r:"The church John Baxter restores",
      d:"Nicolas Roeg shot the wrong Venice on purpose — winter, empty, far west in Dorsoduro where no tour goes. The church is real, still parish, and still open.",
+     q:"No single scene — the church is Baxter's workplace and recurs from about 0:20 onward. The scaffolding fall, roughly halfway, is the one to jump to if you want the building itself doing the acting.",
      x:"Twelve minutes west along the Zattere. The Baxters' hotel is the Gabrielli on Riva degli Schiavoni.",
      c:"45.4326,12.3178"},
     {n:"Palazzo Pisani Moretta", f:"The Tourist", y:"2010", r:"The 'Hotel Danieli' water entrance",
      d:"Depp and Jolie check into the Danieli, except the arrival filmed is this palazzo on the Grand Canal. The actual Danieli is round at San Zaccaria, nowhere near the shot.",
+     q:"Early — around 0:20, right after the train gets in. The water-door arrival is about ninety seconds long and it is the only reason to scrub this one.",
      x:"Best seen from the water — Line 1 passes the door.",
      c:"45.4364,12.3300"}
   ],
@@ -643,42 +653,52 @@ const PORTS = [
   screen:[
     {n:"Fort Lovrijenac", f:"Game of Thrones", y:"2011–", r:"The Red Keep, from outside",
      d:"The free-standing fortress on the rock west of Pile is the Red Keep exterior, and the ground for Joffrey's name-day tourney. Its own history beats the fiction: raised in three months in 1038 to reach the rock before a Venetian fleet could.",
+     q:"S2E1, the opening minutes — the name-day tourney, the Hound, and Ser Dontos too drunk to fight. Cold open to about the ten-minute mark and you have the fortress from every angle.",
      x:"Entry is included in the City Walls ticket — do not pay twice. Steep steps, no shade.",
      c:"42.6410,18.1042"},
     {n:"Jesuit Stairs", f:"Game of Thrones", y:"2015", r:"Cersei's walk of shame",
      d:"The walk begins at the top of the baroque flight by St Ignatius and ends down in Gundulić Square, shot over several nights with the stone dressed to look like earth.",
+     q:"S5E10, the last twenty minutes of the season. The walk runs unbroken for about five of them — the single best-known sequence shot in this city, and you can watch it standing on the top step.",
      x:"This is stop 6 of the walk — you will be standing on it anyway.",
      c:"42.6397,18.1097"},
     {n:"Minčeta Tower", f:"Game of Thrones", y:"2012", r:"The House of the Undying, Qarth",
      d:"The round tower at the highest corner of the walls is the exterior Daenerys circles, looking for a way in to her stolen dragons.",
+     q:"S2E10, in the Daenerys thread — she circles the tower looking for a door before the interior goes elsewhere entirely. A short exterior; jump to her Qarth scenes and it is the first thing you see.",
      x:"On the wall circuit, so it costs you nothing extra. Also used as a Canto Bight backdrop in The Last Jedi.",
      c:"42.6423,18.1091"},
     {n:"Ethnographic Museum Rupe", f:"Game of Thrones", y:"2011–", r:"Littlefinger's brothel",
      d:"A 16th-century state granary with fifteen dry wells cut into the bedrock beneath it. The production used the frontage; the museum inside is one of the best things in the city and almost nobody goes in.",
+     q:"No one scene to queue. The frontage is set dressing that recurs in King's Landing street work through seasons two to five, always in passing and never held. Do not spend an evening hunting it.",
      x:"",
      c:"42.6404,18.1073"},
     {n:"Gradac Park", f:"Game of Thrones", y:"2014", r:"The Purple Wedding",
      d:"Joffrey's wedding feast, and his end, staged on the terrace above the sea in season four episode two.",
+     q:"S4E2, the whole back half. The feast starts around the halfway mark and does not stop until Joffrey does, in the closing minutes. Forty minutes of one episode, all of it filmed on this grass.",
      x:"Ten minutes west of Pile, free, shaded and empty at midday. The best picnic ground in Dubrovnik.",
      c:"42.6403,18.0992"},
     {n:"Pile Gate & Kolorina bay", f:"Game of Thrones", y:"2011–", r:"King's Landing gates · Blackwater Bay",
      d:"The small bay west of the drawbridge stands in for Blackwater Bay in the riot and landing scenes, and the gate itself is the one the smallfolk pour through.",
+     q:"Two to pick from. S2E6 for the riot — Myrcella's send-off turns on the royal party and Sansa is dragged off, in the middle third of the episode. S2E9 'Blackwater' for the bay itself, which is the entire episode.",
      x:"",
      c:"42.6420,18.1057"},
     {n:"St Dominic Street", f:"Game of Thrones · Robin Hood", y:"2011– · 2018", r:"King's Landing market · Nottingham",
      d:"The broad stepped street inside the Ploče end doubles as the King's Landing market. In 2018 the whole quarter became Nottingham, with the Church of St Dominic as the palace exterior.",
+     q:"Recurring background rather than a scene — any King's Landing street walk from seasons two to five. Robin Hood is the better watch for the street itself: Nottingham exteriors run through the middle of the film, church frontage included.",
      x:"",
      c:"42.6425,18.1113"},
     {n:"Stradun", f:"Star Wars: The Last Jedi", y:"2017", r:"Canto Bight",
      d:"The casino-city chase was shot along the main street in March 2016, the 16th-century fronts dressed over as Cantonica. Filming also took the walls by Minčeta, the square by Revelin, Banje beach and the lane down to the Aquarium.",
+     q:"The Canto Bight detour, roughly the middle third of a 152-minute film — Finn and Rose arrive around the hour mark and the fathier stampede down the street follows some fifteen minutes later. Everything Dubrovnik is inside that half hour.",
      x:"",
      c:"42.6412,18.1097"},
     {n:"Lokrum island", f:"Game of Thrones", y:"2012", r:"Qarth",
      d:"The Benedictine cloister on the island is the Qarth garden party where Daenerys is refused her ships. The visitor centre keeps a replica Iron Throne, given by HBO.",
+     q:"S2E5, the garden party at Xaro Xhoan Daxos's house — Daenerys working the room for ships and getting nowhere. Mid-episode, and the cloister is unmistakable once you have walked it.",
      x:"Boats from the Old Port, 15 minutes each way. The last return is earlier than you think — read the board before you sail.",
      c:"42.6266,18.1214"},
     {n:"Trsteno Arboretum", f:"Game of Thrones", y:"2012–", r:"The royal gardens of King's Landing",
      d:"Planted from 1492 and the oldest arboretum on this coast, standing in for the Red Keep gardens where Sansa and the Tyrells do their plotting under the plane trees.",
+     q:"S3E2 is the one — Olenna Tyrell's lemon-cake interrogation of Sansa, about a third of the way in. The gardens then recur through seasons three and four whenever a Tyrell needs to plot outdoors.",
      x:"About 18 km up the coast — bus 12/15 or a taxi, roughly €10 in, and only sane on a long port day.",
      c:"42.7508,17.9836"}
   ],
@@ -769,18 +789,22 @@ const PORTS = [
   screen:[
     {n:"Kotor Old Town", f:"Coriolanus", y:"2011", r:"Antium, the enemy city",
      d:"Ralph Fiennes shot his modern-dress Coriolanus across Serbia and Montenegro, and the walled town plays the Volscian city Coriolanus defects to. The 2017 Papillon remake also opens here.",
+     q:"Second half — after the exile, when Coriolanus walks into the enemy city hooded and finds Aufidius. Roughly the 1:15 mark of a two-hour film, and the streets stay on screen through the scenes that follow.",
      x:"",
      c:"42.4247,18.7706"},
     {n:"Perast & the bay", f:"The November Man", y:"2014", r:"Lausanne and Lake Geneva",
      d:"Pierce Brosnan's Boka Bay doubles for Lake Geneva, with Perast standing in for Lausanne. The bay is playing Switzerland, which tells you something about the light on it.",
+     q:"Anywhere the film says Lausanne — the waterside scenes in the back half. There is no single set piece to jump to; the bay is scenery, and you will recognise the water before you recognise the plot.",
      x:"Twenty minutes up the bay by road. Worth doing only if you skip the fortress.",
      c:"42.4867,18.6989"},
     {n:"Mamula island", f:"Papillon", y:"2017", r:"The penal colony",
      d:"The circular fort on the islet at the mouth of the bay is the prison. An 1850s Austrian gun fort, then an Italian camp in the Second World War, and now — to considerable local anger — a hotel.",
+     q:"The prison-island stretch of the second half, from about 1:15 of a 133-minute film. The establishing shots of the fort from the water are the ones worth pausing on before you sail past the real thing.",
      x:"Visible off the port side on the way out. Bring the camera up on deck for the exit.",
      c:"42.3939,18.5561"},
     {n:"Casino Royale — the one that got away", f:"Casino Royale", y:"2006", r:"Set in Montenegro. Shot in Czechia.",
      d:"The whole Montenegro act — Hotel Splendide, the train through the mountains, the casino itself — is Karlovy Vary. Montenegro had just voted for independence and could not host a production that size, so the Grandhotel Pupp became the Splendide and the spa became the casino. Nothing you can see from this deck is in the film.",
+     q:"Nothing here to queue. If you want to see what was not filmed here, the Montenegro act runs from roughly 1:00 to 1:50 — the train, the Splendide, the whole poker game — and every frame of it is Czech.",
      x:"Ignore anyone on the quay selling a Bond tour of Kotor.",
      c:""}
   ],
@@ -871,14 +895,17 @@ const PORTS = [
   screen:[
     {n:"Hvar town & the Pakleni channel", f:"The Odyssey", y:"2016", r:"Cousteau's Calypso",
      d:"Jérôme Salle's Cousteau biopic worked out of Hvar town, Stari Grad and Jelsa, with the diving sequences shot in the channel off the Pakleni islands.",
+     q:"The early Mediterranean stretch, before the film moves to the Antarctic and the Amazon — the first half hour or so, where the Calypso is being fitted out and the diving is all warm water. That water is the channel you are looking at.",
      x:"",
      c:"43.1723,16.4419"},
     {n:"The Pakleni islands", f:"The Deep — Orson Welles, unfinished", y:"1967–69", r:"A yacht, becalmed",
      d:"Welles spent three summers shooting a thriller in this exact water, financing it himself between other people's films, and never finished it. Laurence Harvey died before the dubbing. Most of the footage survives in a Munich archive; almost none of it has been seen.",
+     q:"Nothing to queue, and that is the entry. There is no cut to watch — only clips that surface in Welles documentaries now and then. The water is the only version of this film anyone can see.",
      x:"The islands are twenty minutes out by taxi boat from the riva — the same water, and the best swimming near the town.",
      c:"43.1630,16.3960"},
     {n:"Komiža, island of Vis", f:"Mamma Mia! Here We Go Again", y:"2018", r:"Kalokairi, the Greek island",
      d:"The sequel's Greece is Croatia: Komiža harbour, the Barjoška cove on the western tip, and Stiniva for the beach.",
+     q:"Most of the film — Kalokairi is the setting, not a scene. For the harbour specifically, the young-Donna arrival in the first half hour; for the cove and the cliffs, the boat-and-beach numbers that follow.",
      x:"Vis is the low island on the southern horizon, roughly 30 km off. It is not a port-day trip from here — note it for another year.",
      c:"43.0450,16.0920"}
   ],
@@ -969,14 +996,17 @@ const PORTS = [
   screen:[
     {n:"Voštarnica quarter", f:"The Terminal List: Dark Wolf", y:"2025", r:"Mosul, Iraq",
      d:"The production did not come for the Roman forum. It came for the peeling twentieth-century facades of the old Vošta works east of the bridge, which pass convincingly for northern Iraq.",
+     q:"Anything captioned Mosul, and those sit in the early episodes of the season. The production never published an episode-by-episode location list, so scrub the first few rather than trusting a number from anyone on the quay.",
      x:"A working district, not a sight. Twenty minutes out along the harbour if you are curious.",
      c:"44.1213,15.2338"},
     {n:"Zrmanja canyon & Paklenica", f:"The Winnetou films", y:"1963–68", r:"The American West",
      d:"Seven of the eleven Karl May westerns were shot in the limestone canyons behind Zadar. An entire German generation pictures the Wild West and sees Velebit. Starigrad keeps a permanent exhibit in the hotel the crew used.",
+     q:"Start with Winnetou I (1963) — the river and canyon riding in the first half is the Zrmanja, and it is the clearest look at the landscape in the series. Der Schatz im Silbersee (1962) is the other one worth an hour.",
      x:"Paklenica's gate is about 45 minutes north by road and the Zrmanja viewpoints further again. A full day, not a port call.",
      c:"44.3014,15.4661"},
     {n:"The old town", f:"The Day of the Jackal", y:"2024", r:"European exteriors",
      d:"Zadar turns up in the Sky and Peacock remake among a long list of European locations. The production never published a scene map, so treat any precise claim made to you on the quay as sales patter.",
+     q:"No cue worth giving. Croatian shooting was folded in among a dozen other countries and never identified on screen, so there is no episode to jump to and no timestamp anyone can honestly quote you.",
      x:"",
      c:"44.1155,15.2245"}
   ],
@@ -1067,14 +1097,17 @@ const PORTS = [
   screen:[
     {n:"Tartini Square & the walls", f:"The Union", y:"2024", r:"The chase",
      d:"Netflix put Halle Berry and Mark Wahlberg through the old town for two weeks — the square, the ramparts above it and the seafront all take a turn.",
+     q:"The European chase in the middle of the film, roughly the 50-to-70-minute mark of a 109-minute run. The town is dressed as somewhere else and cut fast, so watch the rooftops and the bell tower rather than the street signs.",
      x:"",
      c:"45.5281,13.5686"},
     {n:"Prvomajski trg (1 May Square)", f:"Our Car · Summer in a Seashell", y:"1962 · 1986", r:"Slovenia's most filmed square",
      d:"The old cistern square behind Tartini is where František Čap set his 1962 comedy and where Tugo Štiglic shot the biggest Slovene hit of the 1980s. The European Film Academy has listed it as a Treasure of European Film Culture.",
+     q:"Summer in a Seashell is the findable one and the square carries much of it, on and off from the opening reel. Neither film streams reliably outside Slovenia and subtitles are scarce — this is one to look up before you sail, not on ship wifi.",
      x:"Two minutes uphill from Tartini, and almost always empty.",
      c:"45.5289,13.5691"},
     {n:"The town itself", f:"František Čap's Piran", y:"1953–72", r:"A director's adopted set",
      d:"The Czech director moved here in the 1950s and made eleven films in the town, which is why so much of Yugoslav cinema is set on this one small peninsula. More than fifty productions have shot in and around Piran since.",
+     q:"A body of work, not a scene. If you want one, Vesna (1953) is the film that made his name and the town is in it throughout. The Slovenian Cinematheque, not any streaming service, is where these live.",
      x:"",
      c:"45.5274,13.5697"}
   ],
@@ -1168,7 +1201,7 @@ function points(p){
   (p.buy||[]).forEach((s,i) => out.push(
     {k:"buy", i, num:i+1, n:s.n, c:s.c, sub:"", d:s.d}));
   (p.screen||[]).forEach((s,i) => out.push(
-    {k:"screen", i, num:i+1, n:s.n, c:s.c, sub:s.f + " · " + s.y, tag:s.r, d:s.d, x:s.x}));
+    {k:"screen", i, num:i+1, n:s.n, c:s.c, sub:s.f + " · " + s.y, tag:s.r, d:s.d, x:s.x, q:s.q}));
   return out;
 }
 const keyOf = o => o.k + ":" + o.i;
@@ -1314,6 +1347,7 @@ function card(o){
         (o.tag ? '<span class="entry-tag">' + esc(o.tag) + '</span>' : '') + '</div>' +
     '</div>' +
     '<p>' + esc(o.d) + '</p>' +
+    (o.q ? '<p class="cue"><b>Where to find it</b>' + esc(o.q) + '</p>' : '') +
     (o.x ? '<p class="note">' + esc(o.x) + '</p>' : '') +
     '<div class="card-foot">' +
       (L ? '<span class="coord">' + esc(o.c) + '</span>' +
@@ -2255,7 +2289,8 @@ function gpxFor(p){
     const L = ll(o.c);
     return '  <wpt lat="' + L.lat + '" lon="' + L.lon + '">\n' +
       '    <name>' + x(KIND[o.k].t.toUpperCase().slice(0,1) + o.num + " " + o.n) + '</name>\n' +
-      '    <desc>' + x((o.sub ? o.sub + " — " : "") + (o.d||"")) + '</desc>\n' +
+      '    <desc>' + x((o.sub ? o.sub + " — " : "") + (o.d||"") +
+                      (o.q ? " Where to find it: " + o.q : "")) + '</desc>\n' +
       '    <type>' + o.k + '</type>\n  </wpt>';
   }).join("\n");
   const rte = '  <rte>\n    <name>' + x(p.name + " — walking order") + '</name>\n' +
@@ -2291,7 +2326,9 @@ function renderPanel(){
   else if(tab === "taste")  $("#panel").innerHTML = renderTaste();
   else if(tab === "buy")    $("#panel").innerHTML = renderCards("buy");
   else if(tab === "screen") $("#panel").innerHTML = renderCards("screen",
-    "What was filmed here, and what only pretends to have been. Everything below is a real location you can stand on unless the card says otherwise.");
+    "What was filmed here, and what only pretends to have been. Everything below is a real location you can stand on unless the card says otherwise. " +
+    "Each card tells you where to find the scene — season and episode where there is one, otherwise roughly where in the running time to scrub. " +
+    "Clock times are approximate, and where nothing honest can be cited the card says so.");
   else if(tab === "chart"){ $("#panel").innerHTML = chartShell(); drawView(); }
   else $("#panel").innerHTML = '<ul class="know">' +
     p.know.map(k => "<li>" + esc(k) + "</li>").join("") + "</ul>";
