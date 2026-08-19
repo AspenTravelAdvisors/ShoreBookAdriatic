@@ -152,6 +152,24 @@ h1{
 .geo+.geo{margin-left:14px}
 .geo.btn{border:0;border-bottom:1px solid var(--sea-tint);background:none;padding:0;cursor:pointer}
 
+/* ---------- the drink (foot of the food tour) ---------- */
+.sips{border-top:1px solid var(--rule);margin-top:24px;padding-top:14px}
+.sips h3{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--mute);font-weight:400;margin:0 0 6px}
+.sip{border:1px solid var(--rule);background:var(--sand);padding:11px 12px;margin:0 0 10px}
+.sip-kind{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--olio);display:block}
+.sip-kind.lt{color:var(--sea)}
+.sip-name{font-family:var(--display);font-size:21px;line-height:1.15;display:block;margin-top:2px}
+.sip-where{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;color:var(--mute);margin-top:5px}
+.sip-where em{font-style:normal;white-space:nowrap}
+.sip p{margin:8px 0 0;font-size:14px}
+.sip .note{color:var(--mute);font-size:13px}
+.sip .look{margin-top:9px}
+.look.lt{border-left-color:var(--sea)}
+.look.lt b{color:var(--sea)}
+
 /* ---------- projection ---------- */
 .proj{border:1px dashed var(--rule);background:var(--sand);padding:11px 13px;margin:0 0 20px;
   font-size:13.5px}
@@ -517,6 +535,19 @@ const PORTS = [
      x:"This lands you at the last stop of the walk. Time it for the hour before sunset and you have done Venice properly.",
      c:"45.4304,12.3242"}
   ],
+  sipNote:"Venice is the one port on this route where the spritz is not an import. It was invented here out of an Austrian habit of cutting wine with water, and the city still argues about which bitter belongs in it. Aperol is the visitor's answer; Select is the Venetian one.",
+  sip:[
+    {t:"local", n:"Select Spritz", w:"Cantine del Vino già Schiavi, Dorsoduro", pr:"€3.50",
+     d:"Select was blended in Venice in 1920 and never really left — darker than Aperol, drier, more rhubarb and gentian than orange. The Venetian build is prosecco or white wine, Select, a splash of soda and a fat green olive. Never a slice of orange; that is the mainland version and someone will tell you so.",
+     o:"“Un spritz con Select” — and let them put the olive in.",
+     x:"Già Schiavi faces the boatyard at San Trovaso: a wine shop with no seats that hands you the glass and expects you to stand on the bridge with it. Cash. Closed Sunday afternoon. Six minutes uphill from the Zattere, so it slots in before the last stop of the walk.",
+     c:"45.4310,12.3255"},
+    {t:"light", n:"Spritz bianco", w:"Bacareto da Lele, Campo dei Tolentini", pr:"€1–1.50",
+     d:"The spritz as it was before the bitters arrived: white wine, soda, ice, olive, nothing else. It is what the city drank for a century before Select existed, and it is the lightest thing you can hold at eleven in the morning without anyone raising an eyebrow.",
+     o:"“Uno spritz bianco” — or “spritz senza bitter” if they look blank.",
+     x:"Da Lele is a hatch on a campo near Piazzale Roma with no chairs, a queue of students and glasses at about a euro. Cash only, shuts early evening. For the return call do the Venetian ending instead — a sgroppino, lemon sorbet whipped with prosecco and a little vodka, after dinner at Trattoria alla Madonna.",
+     c:"45.4361,12.3199"}
+  ],
   buy:[
     {n:"Marbled paper", d:"Legatoria Polliero by the Frari, and Il Pavone in Dorsoduro. Hand-combed, not printed — check the edge of the sheet.", c:"45.4369,12.3264"},
     {n:"Murano glass", d:"Buy on Murano itself or from a shop showing the Vetro Artistico Murano trademark. Everything on the Riva degli Schiavoni is imported.", c:"45.4575,12.3530"},
@@ -644,6 +675,19 @@ const PORTS = [
      o:"Rožata and a coffee. If you are staying for dinner, capon in honey and orange is the house's historic dish and the reason for the name.",
      x:"On Boškovića square. Dessert alone in the afternoon is normally fine; dinner needs booking.",
      c:"42.6411,18.1109"}
+  ],
+  sipNote:"Dubrovnik's own drink is a rose. Republic households steeped scented garden petals in grape brandy and sugar and kept the jar for weddings and saints' days, and the same liqueur is what sets the rozata on the food tour. It is rarely printed on a menu — you have to ask for it by name, which is the whole trick.",
+  sip:[
+    {t:"local", n:"Rozulin", w:"D'Vino Wine Bar, Palmotićeva 4a", pr:"€4–7 a glass",
+     d:"Rose petals, sugar and rakija left a month or two until the brandy turns pale and tastes improbably of the garden it came out of. Served small and cold, before a meal rather than after it.",
+     o:"“Imate li domaći rozulin?” — do you have homemade rozulin. If the answer is no, ask instead for Malvasija Dubrovačka: the Republic's own white grape, down to a handful of hectares in Konavle and brought back deliberately.",
+     x:"D'Vino is the third lane on the left walking in from Pile and pours more Croatian wine by the glass than anywhere else inside the walls, which makes it the likeliest counter in the city to have the bottle. Small, and full from early evening.",
+     c:"42.6417,18.1076"},
+    {t:"light", n:"Rozulin spritz", w:"D'Vino Wine Bar, Palmotićeva 4a", pr:"€8–12",
+     d:"Dubrovnik has no canonical spritz, so this is an assembly rather than a tradition: rozulin lengthened with Croatian pjenušac and soda over a great deal of ice. Anywhere holding the liqueur will make it if you describe it.",
+     o:"“Rozulin, pjenušac i soda, s puno leda.” Do not walk in asking for the local spritz — there isn't one, and you will be sold whatever is nearest the till.",
+     x:"For the setting rather than the mixing, take a plain spritz or a cold Pošip out to Buža, the hole cut through the south wall. Cash, plastic cups, the shortest drinks list in Croatia and forty metres of open sea under your feet.",
+     c:"42.6417,18.1076"}
   ],
   buy:[
     {n:"Konavle embroidery", d:"Geometric red-and-black silk work from the valley south of town. Look for the hand-knotted reverse, not a printed panel.", c:"42.6408,18.1099"},
@@ -781,6 +825,19 @@ const PORTS = [
      x:"Cash, and cheap enough to be suspicious of until it arrives. Ten minutes on foot from the Sea Gate.",
      c:"42.4267,18.7686"}
   ],
+  sipNote:"Montenegro drinks its own grapes and very little else — Vranac black, Krstač white, and whatever the family distilled from what was left. The wine is already on the food tour at Bokun; this is the pair either side of it, the small fierce one and the long cold one.",
+  sip:[
+    {t:"local", n:"Loza", w:"Bokun, in the lanes", pr:"€3–5",
+     d:"Grape rakija, twice distilled, poured at room temperature into a small glass and never over ice. It is offered as hospitality more often than it is sold as a drink, and the homemade version is a good deal stronger than the shelf bottle it looks like.",
+     o:"“Jednu lozu, molim.” If someone waves you over with an unlabelled bottle, that is the one worth having.",
+     x:"Bokun pours Montenegrin and nothing else, which is rare in a town selling lunch to four ships a day. Take it after the Njeguši board, not before the 1,350 steps.",
+     c:"42.4247,18.7712"},
+    {t:"light", n:"Pomegranate spritz", w:"Ladovina, outside the walls", pr:"€6–9",
+     d:"Nar — pomegranate — grows all down this coast and is on every Montenegrin table in September as juice, syrup or liqueur. Long with sparkling wine and soda it is the one spritz on this route that tastes of the ground it is poured on. A bar's idea rather than a tradition, so ask for it by ingredient.",
+     o:"“Spritz sa narom.” Better still, ask them to build it on Krstač instead of prosecco — that is the properly Montenegrin version.",
+     x:"Ladovina is ten minutes north of the Sea Gate, past where the ship crowds stop, and keeps a real bar rather than a fridge. Shade, and half the price of the marina terraces.",
+     c:"42.4269,18.7683"}
+  ],
   buy:[
     {n:"Njeguši prosciutto", d:"Air-dried in the mountain village above the bay. Vacuum packs travel; check your customs allowance before buying meat.", c:"42.4246,18.7710"},
     {n:"Rakija", d:"Loza (grape) and kruna (pear). Buy from a shop with a producer name on the label, not a souvenir bottle.", c:"42.4248,18.7709"},
@@ -887,6 +944,19 @@ const PORTS = [
      x:"The one place on this tour to sit down properly. Small — go at opening or reserve.",
      c:"43.1727,16.4420"}
   ],
+  sipNote:"Two things grow on this island in quantity: vines on the Stari Grad plain, a field system still laid out as the Greeks left it, and lavender on the hills above it. One makes the drink you cannot get at home. The other makes the drink you will want at four in the afternoon.",
+  sip:[
+    {t:"local", n:"Bogdanuša", w:"3 Pršuta, off St Stephen's Square", pr:"€4–6 a glass",
+     d:"An indigenous Hvar white grown almost nowhere else, its name meaning roughly God-given, because it was the wine held back for feast days. Light, dry, faintly saline, and made in such small volume that sailing away from here is the last you will see of it.",
+     o:"“Čašu bogdanuše, molim” — a glass of Bogdanuša. With anything the sea gave up that morning.",
+     x:"3 Pršuta pours Dalmatian by the glass and will have it when the riva restaurants do not. Standing room and two tables; it fills after 19:00, which is after you sail.",
+     c:"43.1727,16.4417"},
+    {t:"light", n:"Lavender spritz", w:"Ka'Lavanda, Ul. Mate Miličića", pr:"€8–11",
+     d:"Hvar once grew something like eight per cent of the world's lavender and the hills behind Velo Grablje still smell of it in September. The spritz is a modern bar habit rather than an old one: lavender syrup, sparkling wine, soda, a great deal of ice and a sprig doing actual work.",
+     o:"“Spritz s lavandom.” If the syrup is not in the well, ask for the same thing built on Bogdanuša rather than prosecco.",
+     x:"A stone room a minute behind the cathedral, named for the crop. It shades early, which counts for something on a treeless island in the afternoon.",
+     c:"43.1730,16.4421"}
+  ],
   buy:[
     {n:"Agave lace", d:"From the Benedictine convent only. Anything sold on the riva as Hvar lace is not this.", c:"43.1729,16.4425"},
     {n:"Lavender", d:"The island's signature crop. Oil and dried bundles from the market stalls; check for a Hvar producer, since much sold here is imported.", c:"43.1724,16.4425"},
@@ -988,6 +1058,19 @@ const PORTS = [
      x:"Mid-September sunset is around 19:15. Sit low on the steps with your back to the town, and wait for a ferry wake.",
      c:"44.1192,15.2225"}
   ],
+  sipNote:"Zadar's drink is not a wine, it is an industry. Dominicans here were distilling marasca cherries — stones, leaves and all — by the 16th century, Girolamo Luxardo put it on a commercial footing on Kalelarga in 1821, and the result ended up in front of Napoleon, Casanova, half the courts of Europe and eventually every Aviation and Last Word ever mixed.",
+  sip:[
+    {t:"local", n:"Maraschino, neat and cold", w:"Kavana Danica, Kalelarga", pr:"€4–6",
+     d:"Clear, not red — the colour people expect comes from the cocktail cherries, not the liqueur. Dry, almondy off the crushed stones, floral, and much less sweet than the bottle suggests. It is a digestif at home and an aperitif for visitors, and both are correct.",
+     o:"“Jedan maraskino, hladan” — one maraschino, cold.",
+     x:"You meet the bottle on the food tour. This is the version where you sit down on Kalelarga with it and take an hour over it, which is the local sport. The straw-wrapped bottle in the shops is the one that survives a suitcase.",
+     c:"44.1152,15.2251"},
+    {t:"light", n:"Maraschino spritz", w:"The Garden, on the city walls", pr:"€8–12",
+     d:"The most defensible invented spritz on this itinerary, because the ingredient genuinely comes from here: maraschino, sparkling wine, soda, a long pour over ice and a twist of lemon to stop it turning sweet. Zadar bars do build it, though not under any fixed name.",
+     o:"“Spritz s maraskinom” — and ask them to keep it dry.",
+     x:"The Garden sits on top of the Venetian walls above the small harbour and is open in season only. All aboard is 20:30 here, so the Sea Organ at sunset and a drink afterwards both fit inside the day.",
+     c:"44.1172,15.2283"}
+  ],
   buy:[
     {n:"Maraschino", d:"Luxardo and Maraska both trace to Zadar. The traditional straw-wrapped bottle is the one worth carrying.", c:"44.1152,15.2255"},
     {n:"Nin salt", d:"Hand-harvested from the pans just north of the city, still by rake and wooden tools.", c:"44.2394,15.1836"},
@@ -1088,6 +1171,19 @@ const PORTS = [
      o:"Whatever the fish of the day is, and Istrian olive oil over everything that will take it.",
      x:"Small, and the locals fill it. Reserve, or turn up at opening.",
      c:"45.5265,13.5709"}
+  ],
+  sipNote:"Slovenia has forty-six kilometres of coast and grows enough wine on it to be smug. Malvazija and refošk come out of the barrel here for roughly what a coffee costs, and nobody is pretending to make cocktails — which is why the light drink in Piran is the one the whole Alpine north drinks rather than something invented for the harbour.",
+  sip:[
+    {t:"local", n:"Refošk from the barrel", w:"Cantina Klet, Trg 1. Maja", pr:"€2 a cup",
+     d:"Istria's own red: dark, sharp with acid, faintly iron, and nothing like anything grown further south on this route. It is the wine for pršut, and for the fried fish being handed out of the hatch across the square.",
+     o:"“En refošk, prosim.” A plate of pršut with it and you have had lunch.",
+     x:"Standing in the square with the cup is the practice, not a compromise. Cash, and it shuts earlier in the evening than anyone expects. If a brinjevec appears afterwards, that is Karst juniper brandy fermented from the berries themselves — not gin, and better than it sounds.",
+     c:"45.5289,13.5690"},
+    {t:"light", n:"Hugo", w:"Cacao, on the seafront", pr:"€5–7",
+     d:"Elderflower syrup, prosecco, soda, mint and lime. Invented in South Tyrol in 2005 and taken up across the Alps and the northern Adriatic so completely that in Slovenia it now outsells the orange kind. The lightest drink on this list, and the only spritz outside Venice with a real regional claim on the route.",
+     o:"“En hugo, prosim.”",
+     x:"The terrace faces west over open water and is the sunset seat in Piran. All aboard is 17:00, though — so this is an afternoon drink taken before the tender queue, not an evening one.",
+     c:"45.5279,13.5676"}
   ],
   buy:[
     {n:"Piran salt & fleur de sel", d:"Hand-raked at Sečovlje on a microbial mat that has been maintained for seven hundred years. Flor de sal is the top grade — buy it from Piranske Soline, the producer's own shop.", c:"45.5281,13.5688"},
@@ -1328,7 +1424,34 @@ function renderTaste(){
           esc(t[i+1].n) + '</div>' : '') +
       '</div></li>').join("") + '</ol>';
 
-  return out;
+  return out + renderSips();
+}
+
+/* ============================================================
+   RENDER — drink this here. Two per port and no more: the one
+   the place itself actually makes, and the long cold one for a
+   hot afternoon. It rides at the foot of the food tour rather
+   than taking a tab of its own.
+   ============================================================ */
+function renderSips(){
+  const p = port(), s = p.sip || [];
+  if(!s.length) return "";
+
+  return '<section class="sips"><h3>Drink this here</h3>' +
+    '<p class="sec-note">' + esc(p.sipNote) + '</p>' +
+    s.map(d => {
+      const lt = d.t === "light";
+      return '<article class="sip">' +
+        '<span class="sip-kind' + (lt ? " lt" : "") + '">' +
+          (lt ? "The light one" : "The local one") + '</span>' +
+        '<span class="sip-name">' + esc(d.n) + '</span>' +
+        '<div class="sip-where"><span>' + esc(d.w) + '</span><em>' + esc(d.pr) + '</em></div>' +
+        '<p>' + esc(d.d) + '</p>' +
+        '<div class="look ord' + (lt ? " lt" : "") + '"><b>Ask for</b>' + esc(d.o) + '</div>' +
+        (d.x ? '<p class="note">' + esc(d.x) + '</p>' : '') +
+        '<a class="geo" href="' + mapsHref(d.c, d.w) + '">' + d.c + ' \u00b7 Maps</a>' +
+      '</article>';
+    }).join("") + '</section>';
 }
 
 /* ============================================================
