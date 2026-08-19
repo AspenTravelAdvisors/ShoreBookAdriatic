@@ -1308,7 +1308,7 @@ function townCentre(p){
   return {lat: pts.reduce((a,b)=>a+b.lat,0)/pts.length,
           lon: pts.reduce((a,b)=>a+b.lon,0)/pts.length};
 }
-const mapsHref = (c,n) => "https://maps.apple.com/?ll=" + c + "&q=" + encodeURIComponent(n);
+const mapsHref = (c) => "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(c);
 
 /* ============================================================
    RENDER — head, ports, tide
@@ -1383,7 +1383,7 @@ function renderWalk(){
         '<p>' + esc(s.w) + '</p>' +
         (s.l ? '<div class="look"><b>Look for</b>' + esc(s.l) + '</div>' : '') +
         (s.x ? '<p style="margin-top:8px;color:var(--mute);font-size:13.5px">' + esc(s.x) + '</p>' : '') +
-        '<a class="geo" href="' + mapsHref(s.c, s.n) + '">' + s.c + ' · Maps</a>' +
+        '<a class="geo" href="' + mapsHref(s.c) + '">' + s.c + ' · Maps</a>' +
         '<button class="geo btn" data-goto="walk:' + i + '">On chart</button>' +
         (i < p.stops.length-1 ? '<div class="leg">&darr; ' + s.leg + ' min walk to ' +
           esc(p.stops[i+1].n) + '</div>' : '') +
@@ -1418,7 +1418,7 @@ function renderTaste(){
         '<p>' + esc(s.d) + '</p>' +
         '<div class="look ord"><b>Order</b>' + esc(s.o) + '</div>' +
         (s.x ? '<p style="margin-top:8px;color:var(--mute);font-size:13.5px">' + esc(s.x) + '</p>' : '') +
-        '<a class="geo" href="' + mapsHref(s.c, s.n) + '">' + s.c + ' · Maps</a>' +
+        '<a class="geo" href="' + mapsHref(s.c) + '">' + s.c + ' · Maps</a>' +
         '<button class="geo btn" data-goto="taste:' + i + '">On chart</button>' +
         (i < t.length-1 ? '<div class="leg">&darr; ' + s.leg + ' min walk to ' +
           esc(t[i+1].n) + '</div>' : '') +
@@ -1449,7 +1449,7 @@ function renderSips(){
         '<p>' + esc(d.d) + '</p>' +
         '<div class="look ord' + (lt ? " lt" : "") + '"><b>Ask for</b>' + esc(d.o) + '</div>' +
         (d.x ? '<p class="note">' + esc(d.x) + '</p>' : '') +
-        '<a class="geo" href="' + mapsHref(d.c, d.w) + '">' + d.c + ' \u00b7 Maps</a>' +
+        '<a class="geo" href="' + mapsHref(d.c) + '">' + d.c + ' \u00b7 Maps</a>' +
       '</article>';
     }).join("") + '</section>';
 }
@@ -1476,7 +1476,7 @@ function card(o){
       (L ? '<span class="coord">' + esc(o.c) + '</span>' +
            (geo.fix ? '<span class="fromhere">' + dist(kmBetween(geo.fix, L)) + ' ' +
                       compass(geo.fix, L) + ' of you</span>' : '') +
-           '<a href="' + mapsHref(o.c, o.n) + '">Open in Maps</a>' +
+           '<a href="' + mapsHref(o.c) + '">Open in Maps</a>' +
            '<button data-goto="' + k + '">Show on map</button>'
          : '<span class="coord">No pin — nothing was filmed here</span>') +
     '</div></article>';
