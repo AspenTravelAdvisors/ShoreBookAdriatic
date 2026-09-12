@@ -147,6 +147,16 @@ h1{
 .stop-dur em{display:block;font-style:normal;font-size:10px;text-align:right;margin-top:3px}
 .look.ord{border-left-color:var(--olio)}
 .look.ord b{color:var(--olio)}
+
+/* ---------- the shopping circuit (same rail, sea ink) ---------- */
+.circ{border-top:1px solid var(--rule);margin-top:24px;padding-top:14px}
+.circ h3{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--mute);font-weight:400;margin:0 0 10px}
+.stop.buy .dot{border-color:var(--sea);color:var(--sea)}
+.look.shop{border-left-color:var(--sea)}
+.look.shop b{color:var(--sea)}
+.brk{margin-top:12px;border-left:2px solid var(--rosso);padding:2px 0 2px 10px;
+  font-size:13px;color:var(--ink)}
 .geo{display:inline-block;margin-top:9px;font-family:var(--mono);font-size:11px;
   color:var(--sea);text-decoration:none;border-bottom:1px solid var(--sea-tint)}
 .geo+.geo{margin-left:14px}
@@ -500,7 +510,8 @@ const PORTS = [
     {n:"Osteria alla Vedova", t:"Cicchetti", d:"Cannaregio. The meatballs are the reason people come. Cash only, no reservations for the bar.", c:"45.4405,12.3336"},
     {n:"Cantina Do Mori", t:"Bacaro", d:"Operating since 1462. Dark, narrow, hung with copper. Order francobolli and an ombra.", c:"45.4381,12.3335"},
     {n:"Trattoria alla Madonna", t:"Sit-down", d:"Old-guard Venetian fish near Rialto. Unfashionable in the best sense.", c:"45.4378,12.3345"},
-    {n:"Pasticceria Tonolo", t:"Breakfast", d:"Dorsoduro. Stand at the bar, take a krapfen, do not ask for a cappuccino after eleven.", c:"45.4362,12.3235"}
+    {n:"Pasticceria Tonolo", t:"Breakfast", d:"Dorsoduro. Stand at the bar, take a krapfen, do not ask for a cappuccino after eleven.", c:"45.4362,12.3235"},
+    {n:"Sepa", t:"Cicchetti", d:"Calle della Bissa, thirty metres off the Rialto crowd. Modern Venetian cicchetti and one of the better craft-beer lists in the city \u2014 small Veneto and Friuli breweries rather than industrial lager. Standing room; everything served compostable, down to the wine cups. It is the halfway stop on the shopping circuit.", c:"45.4379,12.3363"}
   ],
   tasteNote:"Venice eats standing up. A cicchetto is one mouthful on bread or a stick, an ombra is the small glass of wine that goes with it, and the pair costs a fraction of a sat-down meal. Go in the morning: the bars cook what the market had at seven and they sell out.",
   taste:[
@@ -548,11 +559,65 @@ const PORTS = [
      x:"Da Lele is a hatch on a campo near Piazzale Roma with no chairs, a queue of students and glasses at about a euro. Cash only, shuts early evening. For the return call do the Venetian ending instead — a sgroppino, lemon sorbet whipped with prosecco and a little vodka, after dinner at Trattoria alla Madonna.",
      c:"45.4361,12.3199"}
   ],
+  buyNote:"Two different things are for sale in this city. The first is the craft it still actually makes \u2014 paper, glass, oar-locks, lace \u2014 where the whole skill is telling the real from the imported, and that is the list below. The second is linen, which in September is simply the right thing to be wearing here and costs less on the ground than it does at home.",
+  circuitNote:"A shopping loop rather than a shopping day. It runs San Marco \u2192 Campo San Luca \u2192 the Mercerie \u2192 Rialto \u2192 over the bridge into San Polo, and both of you can browse the same shops at the same time rather than taking turns. Target is 100% linen at \u20ac40\u2013100, Italian shops ahead of luxury labels. Start around 11:00 and the cicchetti break falls where it should \u2014 add half an hour for it on top of the figure below.",
   buy:[
     {n:"Marbled paper", d:"Legatoria Polliero by the Frari, and Il Pavone in Dorsoduro. Hand-combed, not printed — check the edge of the sheet.", c:"45.4369,12.3264"},
     {n:"Murano glass", d:"Buy on Murano itself or from a shop showing the Vetro Artistico Murano trademark. Everything on the Riva degli Schiavoni is imported.", c:"45.4575,12.3530"},
     {n:"Forcole and oars", d:"Saverio Pastor, near the Salute. Sculptural walnut oarlocks — a genuine Venetian craft with about three practitioners left.", c:"45.4300,12.3330"},
-    {n:"Burano lace", d:"Real punto in aria costs hundreds and takes months. Anything cheap is machine-made from abroad; the museum shop is honest about which is which.", c:"45.4853,12.4170"}
+    {n:"Burano lace", d:"Real punto in aria costs hundreds and takes months. Anything cheap is machine-made from abroad; the museum shop is honest about which is which.", c:"45.4853,12.4170"},
+
+    {t:"shop", n:"Zara", w:"Both \u00b7 Bacino Orseolo, behind the Piazza", who:"Both", pr:"\u20ac30\u201370", dur:20, leg:5,
+     d:"The first sweep, and the one to do fastest. A large branch by Venetian standards, carrying both collections, which makes it the cheapest way to find out what fifty euros buys before you start paying more than that elsewhere.",
+     o:"100% linen on the composition label \u2014 not the linen-look blends the summer rails are full of. Both of you at once; ten minutes each side of the floor.",
+     x:"This is the benchmark, not the destination. Anything here over about \u20ac70 should wait until you have seen Fusaro.",
+     c:"45.4344,12.3378"},
+    {t:"shop", n:"Luigi Fusaro", w:"Men \u00b7 San Marco 4854, off Campo San Luca", who:"Men", pr:"\u20ac59\u2013100", dur:25, leg:4,
+     d:"An Italian menswear house trading since 1893, and the best value on the walk: pure linen trousers advertised at around \u20ac69 in beige, white, green and light blue, and linen shirts at about \u20ac59. That is chain pricing inside a proper shop.",
+     o:"The 100% linen trousers. This is the number every later price is judged against \u2014 do not pay \u20ac90 for a linen blend somewhere else unless the cut is remarkable.",
+     x:"The shop has announced a move to San Marco 729\u2013730 at San Zulian, two minutes away on the Merceria; if 4854 is shuttered, that is where it went. Prices are the ones it publishes and were not checked on the door.",
+     c:"45.4350,12.3370"},
+    {t:"shop", n:"Doppelg\u00e4nger", w:"Men \u00b7 Calle del Magazen 4537, off Campo San Luca", who:"Men", pr:"\u20ac40\u201380", dur:15, leg:2,
+     d:"A few doors off the campo, and the cheapest serious linen on the circuit \u2014 trousers open around \u20ac40, and the linen suits are priced well below what the address suggests.",
+     o:"Linen trousers and the unstructured jackets. Sizing is Italian and cut close; take the next size up before deciding it does not fit.",
+     x:"",
+     c:"45.4352,12.3362"},
+    {t:"shop", n:"OVS San Luca", w:"Both \u00b7 Calle Goldoni 4538", who:"Both", pr:"\u20ac25\u201370", dur:15, leg:2,
+     d:"Italy's own high street, and the chain stop where you should both be looking. It carries PIOMBO, the in-house line that does the plain, well-cut natural-fabric separates the rest of the shop does not.",
+     o:"PIOMBO for him. For her it is the whole floor \u2014 linen trousers, wide-leg, overshirts \u2014 and very little of it is over \u20ac50.",
+     x:"If the size is missing here, the Rialto branch later on this circuit is a second roll of the same dice. That is why the walk passes two of them.",
+     c:"45.4356,12.3356"},
+    {t:"shop", n:"H&M", w:"Both \u00b7 Campo San Luca 4473", who:"Both", pr:"\u20ac25\u201360", dur:12, leg:6,
+     d:"On the campo itself, both collections under one roof, and worth exactly a quarter of an hour. Most of the floor is not what you came for.",
+     o:"The natural-fibre and Premium Selection rails only. Ignore the rest and you are out in ten minutes.",
+     x:"Mon\u2013Sat 09:30\u201319:30, Sunday 10:00\u201319:30.",
+     c:"45.4353,12.3364"},
+    {t:"shop", n:"The Mercerie boutiques", w:"Both \u00b7 Merceria San Salvador to Merceria San Zulian", who:"Both", pr:"Varies", dur:25, leg:3,
+     d:"The oldest shopping street in the city, running San Marco to Rialto, and the stretch where small independents still sit between the brands. This is where the \u20ac50\u2013100 Italian-made piece turns up that does not look like anybody's chain.",
+     o:"Anything linen with an Italian label between those two numbers. She will do better here than you will \u2014 lightweight trousers, wide-leg, dresses, tops and overshirts are far easier to find than one particular men's cut.",
+     x:"Do not pin the day on one small shop having your size. Wander it, buy what fits, keep walking north.",
+     c:"45.4361,12.3376"},
+    {t:"shop", n:"United Colors of Benetton", w:"Both \u00b7 Merceria II Aprile 5051, short of the Rialto", who:"Both", pr:"\u20ac40\u2013100", dur:15, leg:8,
+     d:"Two thousand square metres over several floors a few steps short of the bridge \u2014 the largest single shop on the circuit and the last one before you cross.",
+     o:"Plain Italian separates rather than the loud end of the range. Stronger for her than for you; Fusaro has already covered your ground.",
+     x:"Mon\u2013Sat 09:30\u201320:00, Sunday 10:00\u201320:00.",
+     brk:"Halfway. Two or three cicchetti and one Veneto craft beer standing up at Sepa, Calle della Bissa, thirty metres off the route \u2014 it is on the Eat list. Not lunch: there is a bridge and two more shops after this.",
+     c:"45.4372,12.3369"},
+    {t:"shop", n:"OVS Rialto", w:"Both \u00b7 Salizada S. Giovanni Grisostomo 5787", who:"Both", pr:"\u20ac25\u201370", dur:20, leg:10,
+     d:"Opened in 2024 in a historic building on the corner of the Rio del Fondaco dei Tedeschi, a minute north of the bridge, and the best big-value store of the walk. Same PIOMBO line as San Luca, different stock.",
+     o:"Whatever San Luca did not have in your size or colour. Second roll of the dice, and the only reason to shop a chain twice in one morning.",
+     x:"Open daily 09:00\u201320:00, which also makes it the Sunday stop when the small shops are shut.",
+     c:"45.4387,12.3369"},
+    {t:"shop", n:"Route 66", w:"Men \u00b7 Calle del Scaleter, San Polo, over the bridge", who:"Men", pr:"\u20ac40\u2013100", dur:20, leg:0,
+     d:"The wildcard at the end \u2014 a small San Polo shop trading in casual menswear and lightweight linen, which is worth trying only once the chains have told you what \u20ac50 buys.",
+     o:"A cut the chains do not do. While you are digging, she has the San Polo boutiques either side rather than a chair by the door.",
+     x:"The address is given as San Polo 1014, and the shop is small and barely indexed \u2014 treat the pin as the street rather than the door. If it is shut, the San Polo shops around it are the real reason to have crossed the bridge.",
+     c:"45.4392,12.3296"},
+    {t:"shop", off:true, n:"Mango", w:"Women \u00b7 Fondamenta Santa Lucia 23, inside the station", who:"Women", pr:"\u20ac30\u201380", dur:15, leg:0,
+     d:"Women only, and on the wrong side of the city for the circuit \u2014 do it on the way in or out rather than walking to it. Fifteen minutes is enough: linen trousers, dresses, tops.",
+     o:"Linen and viscose separates. It is not a big shop and does not need longer than one platform wait.",
+     x:"Open daily, roughly 08:00\u201320:00. Not worth crossing Venice for on its own.",
+     c:"45.4410,12.3210"}
   ],
   screen:[
     {n:"Campo San Barnaba", f:"Indiana Jones and the Last Crusade", y:"1989", r:"The library",
@@ -1298,7 +1363,10 @@ function points(p){
     {k:"taste", i, num:i+1, n:s.n, c:s.c, sub:s.sp + " · " + s.pr, tag:"Food tour " + (i+1),
      d:s.d, x:s.o + (s.x ? " " + s.x : "")}));
   (p.buy||[]).forEach((s,i) => out.push(
-    {k:"buy", i, num:i+1, n:s.n, c:s.c, sub:"", d:s.d}));
+    {k:"buy", i, num:i+1, n:s.n, c:s.c,
+     sub: s.t === "shop" ? s.who + " \u00b7 " + s.pr : "",
+     tag: s.t === "shop" ? (s.off ? "Off the circuit" : "Shopping circuit") : "",
+     d:s.d, x: s.o ? s.o + (s.x ? " " + s.x : "") : s.x}));
   (p.screen||[]).forEach((s,i) => out.push(
     {k:"screen", i, num:i+1, n:s.n, c:s.c, sub:s.f + " · " + s.y, tag:s.r, d:s.d, x:s.x, q:s.q}));
   return out;
@@ -1485,6 +1553,66 @@ function card(o){
            '<button data-goto="' + k + '">Show on map</button>'
          : '<span class="coord">No pin — nothing was filmed here</span>') +
     '</div></article>';
+}
+
+/* ============================================================
+   RENDER — buy. Two lists that behave differently: the crafts
+   are a matter of telling real from imported, so they stay cards;
+   the shops are a route with walking between them, so they get
+   the same rail as the food tour.
+   ============================================================ */
+function renderBuy(){
+  const p = port(), all = p.buy || [];
+  if(!all.length) return '<p class="sec-note">Nothing listed for this port.</p>';
+
+  const pts = {};
+  points(p).forEach(o => { if(o.k === "buy") pts[o.i] = o; });
+
+  const goods = [], circuit = [], aside = [];
+  all.forEach((s,i) => {
+    if(s.t !== "shop") goods.push({s,i});
+    else (s.off ? aside : circuit).push({s,i});
+  });
+
+  let out = p.buyNote ? '<p class="sec-note">' + esc(p.buyNote) + '</p>' : "";
+  out += goods.map(g => card(pts[g.i])).join("");
+  if(!circuit.length && !aside.length) return out;
+
+  const total = circuit.reduce((a,x,n) =>
+    a + (x.s.dur||0) + (n < circuit.length-1 ? (x.s.leg||0) : 0), 0);
+
+  out += '<section class="circ"><h3>The shopping circuit</h3>' +
+    '<div class="proj"><b>Linen, on foot</b>' + esc(p.circuitNote || "") +
+    ' End to end it runs <strong>' + hhmm(total) + '</strong> including the walking between, ' +
+    'and it drops in and out at any stop.</div>';
+
+  out += '<ol class="rail">' + circuit.map((x,n) => {
+    const s = x.s;
+    return '<li class="stop buy" data-i="' + n + '">' +
+      '<span class="dot static" aria-hidden="true">' + (n+1) + '</span>' +
+      '<div class="stop-head" data-open="' + n + '">' +
+        '<span class="stop-name">' + esc(s.n) +
+          '<span class="stop-where">' + esc(s.w) + '</span></span>' +
+        '<span class="stop-dur">' + s.dur + ' min<em>' + esc(s.pr) + '</em></span>' +
+      '</div>' +
+      '<div class="stop-body">' +
+        '<p>' + esc(s.d) + '</p>' +
+        '<div class="look shop"><b>Look for</b>' + esc(s.o) + '</div>' +
+        (s.x ? '<p style="margin-top:8px;color:var(--mute);font-size:13.5px">' +
+               esc(s.x) + '</p>' : '') +
+        '<a class="geo" href="' + mapsHref(s.c, s.n) + '">' + s.c + ' \u00b7 Maps</a>' +
+        '<button class="geo btn" data-goto="buy:' + x.i + '">On chart</button>' +
+        (s.brk ? '<div class="brk">' + esc(s.brk) + '</div>' : '') +
+        (n < circuit.length-1 ? '<div class="leg">&darr; ' + s.leg + ' min walk to ' +
+          esc(circuit[n+1].s.n) + '</div>' : '') +
+      '</div></li>';
+  }).join("") + '</ol>';
+
+  if(aside.length) out += '<p class="sec-note" style="margin:16px 0 10px">' +
+    'Not on the circuit \u2014 worth a quarter of an hour only if you are passing anyway.</p>' +
+    aside.map(a => card(pts[a.i])).join("");
+
+  return out + '</section>';
 }
 
 function renderCards(kind, note){
@@ -2452,7 +2580,7 @@ function renderPanel(){
   if(tab === "walk")        $("#panel").innerHTML = renderWalk();
   else if(tab === "eat")    $("#panel").innerHTML = renderCards("eat");
   else if(tab === "taste")  $("#panel").innerHTML = renderTaste();
-  else if(tab === "buy")    $("#panel").innerHTML = renderCards("buy");
+  else if(tab === "buy")    $("#panel").innerHTML = renderBuy();
   else if(tab === "screen") $("#panel").innerHTML = renderCards("screen",
     "What was filmed here, and what only pretends to have been. Everything below is a real location you can stand on unless the card says otherwise. " +
     "Each card tells you where to find the scene — season and episode where there is one, otherwise roughly where in the running time to scrub. " +
