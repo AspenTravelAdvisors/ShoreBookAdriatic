@@ -1302,6 +1302,24 @@ const doneKey = id => "sb.done." + id;
 const getDone = () => { try{ return JSON.parse(store.get(doneKey(cur)) || "[]"); }catch(e){ return []; } };
 const setDone = a => store.set(doneKey(cur), JSON.stringify(a));
 const timeKey = (id,which) => "sb." + which + "." + id;
+/* Alongside every hand-set time we keep the printed time it was typed over.
+   Without it an edit made on an old itinerary sits there for good, and the
+   book quietly shows a sailing time the ship no longer keeps. */
+const timeBaseKey = (id,which) => timeKey(id,which) + ".base";
+function shipTime(id, which, printed){
+  const set = store.get(timeKey(id,which));
+  if(!set) return printed;
+  if(store.get(timeBaseKey(id,which)) !== printed){   /* the itinerary moved under it */
+    store.del(timeKey(id,which));
+    store.del(timeBaseKey(id,which));
+    return printed;
+  }
+  return set;
+}
+function setShipTime(id, which, v, printed){
+  store.set(timeKey(id,which), v);
+  store.set(timeBaseKey(id,which), printed);
+}
 
 /* chart state */
 const KIND = {
@@ -1397,8 +1415,8 @@ function renderHead(){
   $("#portName").textContent = p.name;
   $("#portSub").textContent = p.sub;
   $("#dock").innerHTML = "<b>" + esc(p.dock.t) + "</b><span>" + esc(p.dock.d) + "</span>";
-  $("#ashore").value = store.get(timeKey(cur,"ashore")) || p.ashore;
-  $("#allAboard").value = store.get(timeKey(cur,"aboard")) || p.aboard;
+  $("#ashore").value = shipTime(cur, "ashore", p.ashore);
+  $("#allAboard").value = shipTime(cur, "aboard", p.aboard);
 }
 
 function renderTide(){
@@ -2715,9 +2733,9 @@ window.addEventListener("resize", () => {
 });
 
 $("#ashore").addEventListener("change", e => {
-  store.set(timeKey(cur,"ashore"), e.target.value); renderTide(); renderPanel(); });
+  setShipTime(cur, "ashore", e.target.value, port().ashore); renderTide(); renderPanel(); });
 $("#allAboard").addEventListener("change", e => {
-  store.set(timeKey(cur,"aboard"), e.target.value); renderTide(); renderPanel(); });
+  setShipTime(cur, "aboard", e.target.value, port().aboard); renderTide(); renderPanel(); });
 $("#reset").addEventListener("click", () => { setDone([]); renderPanel(); });
 
 const d = new Date();
@@ -2732,8 +2750,21 @@ if(store.get("sb.geo") === "1") startGeo();
 
 /* Offline: cache the app on first load so it runs with no signal. */
 if("serviceWorker" in navigator){
+  /* Cache-first means an old copy of the book can sit on a phone indefinitely.
+     Ask for a new one on every launch, and again hourly if the app is left
+     open, so a corrected sailing time reaches the person holding it. */
+  const hadWorker = !!navigator.serviceWorker.controller;
+  let swapping = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if(!hadWorker || swapping) return;   /* first install: nothing to replace */
+    swapping = true;
+    location.reload();
+  });
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("sw.js").catch(() => {});
+    navigator.serviceWorker.register("sw.js").then(reg => {
+      reg.update().catch(() => {});
+      setInterval(() => reg.update().catch(() => {}), 3600000);
+    }).catch(() => {});
   });
 }
 </script>
