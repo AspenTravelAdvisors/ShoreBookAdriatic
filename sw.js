@@ -1,7 +1,10 @@
 /* Shore Book — offline cache.
    Bump CACHE when you edit index.html, or the phone keeps the old copy. */
-const CACHE = "shore-book-v15";
+const CACHE = "shore-book-v16";
 const TILES = "shore-tiles-v1";
+/* Other Shore Books can live on the same origin (one GitHub Pages site per
+   account), and caches are per origin, not per app. Only ever clear our own. */
+const OWN = k => /^shore-(book|tiles)-v\d+$/.test(k);
 const TILE_HOSTS = ["tile.openstreetmap.org"];
 const TILE_MAX = 400;          /* keep the map you have actually looked at, no more */
 const ASSETS = [
@@ -25,7 +28,7 @@ self.addEventListener("activate", e => {
   e.waitUntil(
     caches.keys()
       .then(keys => Promise.all(
-        keys.filter(k => k !== CACHE && k !== TILES).map(k => caches.delete(k))))
+        keys.filter(k => OWN(k) && k !== CACHE && k !== TILES).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
